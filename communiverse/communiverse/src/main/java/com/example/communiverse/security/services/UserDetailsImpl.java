@@ -1,78 +1,50 @@
 package com.example.communiverse.security.services;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.example.communiverse.domain.User;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.Collections;
 
 public class UserDetailsImpl implements UserDetails {
     private static final long serialVersionUID = 1L;
 
     private Long id;
-
-    private String nombre;
-
-    private String apellidos;
-
+    private String name;
+    private String lastname;
+    private String email;
     private String username;
+    private String password;
 
-    @JsonIgnore
-    private String contrasenya;
-
-    private ECliente estado;
-
-    private Collection<? extends GrantedAuthority> authorities;
-
-    public UserDetailsImpl(Long id, String nombre, String apellidos, String username, String contrasenya, ECliente estado, Collection<? extends GrantedAuthority> authorities) {
+    public UserDetailsImpl(Long id, String name, String lastname, String email, String username, String password) {
         this.id = id;
-        this.nombre = nombre;
-        this.apellidos = apellidos;
+        this.name = name;
+        this.lastname = lastname;
+        this.email = email;
         this.username = username;
-        this.contrasenya = contrasenya;
-        this.estado = estado;
-        this.authorities = authorities;
+        this.password = password;
     }
 
-    public static UserDetailsImpl build(Cliente cliente) {
-        List<GrantedAuthority> authorities = cliente.getRols().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getNombre().name()))
-                .collect(Collectors.toList());
-
+    public static UserDetailsImpl build(User user) {
         return new UserDetailsImpl(
-                cliente.getId(),
-                cliente.getNombre(),
-                cliente.getApellidos(),
-                cliente.getUsername(),
-                cliente.getContrasenya(),
-                cliente.getEstado(),
-                authorities);
+                user.getId(),
+                user.getName(),
+                user.getLastname(),
+                user.getEmail(),
+                user.getUsername(),
+                user.getPassword()
+        );
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public String getApellidos() {
-        return apellidos;
+        return Collections.emptyList(); // No roles defined
     }
 
     @Override
     public String getPassword() {
-        return contrasenya;
+        return password;
     }
 
     @Override
@@ -98,15 +70,5 @@ public class UserDetailsImpl implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        UserDetailsImpl user = (UserDetailsImpl) o;
-        return Objects.equals(id, user.id);
     }
 }
