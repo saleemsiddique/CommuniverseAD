@@ -10,14 +10,14 @@ import java.util.Collections;
 public class UserDetailsImpl implements UserDetails {
     private static final long serialVersionUID = 1L;
 
-    private Long id;
+    private String id;
     private String name;
     private String lastname;
     private String email;
     private String username;
     private String password;
 
-    public UserDetailsImpl(Long id, String name, String lastname, String email, String username, String password) {
+    public UserDetailsImpl(String id, String name, String lastname, String email, String username, String password) {
         this.id = id;
         this.name = name;
         this.lastname = lastname;
@@ -30,7 +30,7 @@ public class UserDetailsImpl implements UserDetails {
         return new UserDetailsImpl(
                 user.getId(),
                 user.getName(),
-                user.getLastname(),
+                user.getLastName(),
                 user.getEmail(),
                 user.getUsername(),
                 user.getPassword()
