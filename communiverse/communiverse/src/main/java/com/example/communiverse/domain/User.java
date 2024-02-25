@@ -8,6 +8,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -27,16 +28,16 @@ public class User {
     private String lastName;
 
     @NotBlank
-    @Size(max = 20)
-    private String username;
-
-    @NotBlank
     @Email
     private String email;
 
     @NotBlank
     @Size(min = 8, max = 20)
     private String password;
+
+    @NotBlank
+    @Size(max = 20)
+    private String username;
 
     @Size(max = 255)
     private String biography;
@@ -50,4 +51,19 @@ public class User {
 
     @NotNull
     private UserInteractions interactions;
+
+    public User(String id, String name, String lastName, String email, String password, String username) {
+        this.id = id;
+        this.name = name;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.username = username;
+        this.biography = biography;
+        this.level = 0;
+        this.createdCommunities = new ArrayList<>();
+        this.moderatedCommunities = new ArrayList<>();
+        this.memberCommunities = new ArrayList<>();
+        this.interactions = new UserInteractions();
+    }
 }

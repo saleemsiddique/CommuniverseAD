@@ -1,28 +1,30 @@
 package com.example.communiverse.payload.response;
 
 import lombok.*;
+
+import java.util.List;
+
 @Data
 @Getter
 @ToString
 public class JwtResponse {
     private String token;
     private String type = "Bearer";
-    private Long id;
+    private String id;
     private String name;
     private String lastname;
     private String email;
-    private String contrasenya;
+    private String password;
     private String username;
 
 
-    public JwtResponse(String token, String type, Long id, String name, String lastname, String email, String contrasenya, String username) {
+    public JwtResponse(String token, String id, String name, String lastname, String email, String password, String username) {
         this.token = token;
-        this.type = type;
         this.id = id;
         this.name = name;
         this.lastname = lastname;
         this.email = email;
-        this.contrasenya = contrasenya;
+        this.password = password;
         this.username = username;
     }
 }

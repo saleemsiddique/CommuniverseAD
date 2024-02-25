@@ -20,7 +20,7 @@ public class UserSignupRequest {
 
     @NotBlank
     @Size(min = 3, max = 20)
-    private String lastname;
+    private String lastName;
 
     @NotBlank
     @Size(max = 50)
