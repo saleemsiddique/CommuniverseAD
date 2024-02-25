@@ -1,5 +1,5 @@
 spring:
   data:
-    mongo:
+    mongodb:
       url: mongodb+srv://admin:admin@communiverse.3txpnb3.mongodb.net/?retryWrites=true&w=majority&appName=Communiverse
       database: User
