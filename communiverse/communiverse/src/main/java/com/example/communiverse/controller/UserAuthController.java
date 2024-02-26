@@ -53,26 +53,32 @@ public class UserAuthController {
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody UserLoginRequest userLoginRequest) {
         String loginInput = userLoginRequest.getEmailOrUsername();
-        boolean isEmail = loginInput.contains("@");
         Authentication authentication = null;
 
+        try {
             User user = userRepository.findByUsernameOrEmail(loginInput, loginInput)
                     .orElseThrow(() -> new UsernameNotFoundException("User Not Found with email or username : " + loginInput));
+
             authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(userLoginRequest.getEmailOrUsername(), userLoginRequest.getPassword()));
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwt = jwtUtils.generateJwtToken(authentication);
 
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-        return ResponseEntity.ok(new JwtResponse(jwt,
-                userDetails.getId(),
-                userDetails.getName(),
-                userDetails.getLastname(),
-                userDetails.getEmail(),
-                userDetails.getPassword(),
-                userDetails.getUsername()));
+            return ResponseEntity.ok(new JwtResponse(jwt,
+                    userDetails.getId(),
+                    userDetails.getName(),
+                    userDetails.getLastname(),
+                    userDetails.getEmail(),
+                    userDetails.getPassword(),
+                    userDetails.getUsername()));
+        } catch (UsernameNotFoundException ex) {
+            return ResponseEntity
+                    .badRequest()
+                    .body("User not found with email or username: " + loginInput);
+        }
     }
 
 
@@ -81,13 +87,13 @@ public class UserAuthController {
         if (userRepository.existsByEmail(signUpRequestUser.getEmail())) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: Email is already been used"));
+                    .body("Error: Email is already been used");
         }
 
         if (userRepository.existsByUsername(signUpRequestUser.getUsername())) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: Username is already been used"));
+                    .body("Error: Username is already been used");
         }
 
         String randomId = UUID.randomUUID().toString().split("-")[0];

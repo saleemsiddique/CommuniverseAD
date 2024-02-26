@@ -59,7 +59,7 @@ public class User {
         this.email = email;
         this.password = password;
         this.username = username;
-        this.biography = biography;
+        this.biography = "";
         this.level = 0;
         this.createdCommunities = new ArrayList<>();
         this.moderatedCommunities = new ArrayList<>();
