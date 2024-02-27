@@ -43,7 +43,7 @@ public class User {
     private String biography;
 
     @NotNull
-    private int level;
+    private UserStats userStats;
 
     private List<String> createdCommunities;
     private List<String> moderatedCommunities;
@@ -60,7 +60,7 @@ public class User {
         this.password = password;
         this.username = username;
         this.biography = "";
-        this.level = 0;
+        this.userStats = new UserStats();
         this.createdCommunities = new ArrayList<>();
         this.moderatedCommunities = new ArrayList<>();
         this.memberCommunities = new ArrayList<>();
