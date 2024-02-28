@@ -43,7 +43,8 @@ public class UserAuthController {
 
     @Autowired
     UserRepository userRepository;
-
+    @Autowired
+    UserService userService;
     @Autowired
     PasswordEncoder encoder;
 
@@ -96,12 +97,11 @@ public class UserAuthController {
                     .body("Error: Username is already been used");
         }
 
-        String randomId = UUID.randomUUID().toString().split("-")[0];
         // Create new user's account
-        User user = new User(randomId, signUpRequestUser.getName(), signUpRequestUser.getLastName(), signUpRequestUser.getEmail(),
+        User user = new User(signUpRequestUser.getName(), signUpRequestUser.getLastName(), signUpRequestUser.getEmail(),
                 encoder.encode(signUpRequestUser.getPassword()), signUpRequestUser.getUsername());
 
-        userRepository.save(user);
+        userService.addUser(user);
 
         ObjectMapper objectMapper = new ObjectMapper();
         String clienteJson;

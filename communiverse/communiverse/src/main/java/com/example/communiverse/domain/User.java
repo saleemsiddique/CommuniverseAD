@@ -8,6 +8,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +40,9 @@ public class User {
     @Size(max = 20)
     private String username;
 
+    @Lob
+    private String photo;
+
     @Size(max = 255)
     private String biography;
 
@@ -52,18 +56,26 @@ public class User {
     @NotNull
     private UserInteractions interactions;
 
-    public User(String id, String name, String lastName, String email, String password, String username) {
-        this.id = id;
+    @NotNull
+    private List<String> followers_id;
+
+    @NotNull
+    private List<String> followed_id;
+
+    public User(String name, String lastName, String email, String password, String username) {
         this.name = name;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
         this.username = username;
+        this.photo = "";
         this.biography = "";
         this.userStats = new UserStats();
         this.createdCommunities = new ArrayList<>();
         this.moderatedCommunities = new ArrayList<>();
         this.memberCommunities = new ArrayList<>();
         this.interactions = new UserInteractions();
+        this.followers_id = new ArrayList<>();
+        this.followed_id = new ArrayList<>();
     }
 }
