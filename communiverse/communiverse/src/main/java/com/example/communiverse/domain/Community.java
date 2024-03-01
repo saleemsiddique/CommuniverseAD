@@ -40,5 +40,5 @@ public class Community {
     private int followers;
 
     @NotNull
-    private List<Post> posts;
+    private List<String> posts_id;
 }
