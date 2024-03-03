@@ -43,7 +43,7 @@ public class User {
     @Lob
     private String photo;
 
-    @Size(max = 255)
+    @Size(max = 50)
     private String biography;
 
     @NotNull
