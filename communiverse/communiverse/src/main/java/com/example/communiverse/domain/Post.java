@@ -6,6 +6,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -22,6 +24,7 @@ public class Post {
     @NotBlank
     private String author_id;
 
+    @Size(max = 200)
     private String content;
 
     private List<String> photos;
@@ -33,5 +36,7 @@ public class Post {
     private String repost_user_id;
 
     private Quizz quizz;
+
+    private LocalDateTime dateTime;
 
 }

@@ -1,6 +1,9 @@
 package com.example.communiverse.controller;
 
 import com.example.communiverse.domain.Community;
+import com.example.communiverse.domain.Post;
+import com.example.communiverse.exception.CommunityNotFoundException;
+import com.example.communiverse.exception.UserNotFoundException;
 import com.example.communiverse.service.CommunityService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,15 @@ import java.util.List;
 public class CommunityController {
     @Autowired
     private CommunityService communityService;
+
+    @Operation(summary = "Obtains Community by ID")
+    @GetMapping("/{id}")
+    public ResponseEntity<Community> getTop5CommunitiesByFollowers(@PathVariable String id) {
+        Community community = communityService.findById(id)
+                .orElseThrow(() -> new CommunityNotFoundException(id));
+        return ResponseEntity.ok(community);
+    }
+
 
     @Operation(summary = "Obtains top 5 most popular communities")
     @GetMapping("/top5")

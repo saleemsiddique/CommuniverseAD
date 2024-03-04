@@ -6,6 +6,7 @@ import com.example.communiverse.utils.IdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -22,6 +23,7 @@ public class PostServiceImpl implements PostService{
     @Override
     public Post addPost(Post post) {
         post.setId(IdGenerator.generateId());
+        post.setDateTime(LocalDateTime.now());
         return postRepository.save(post);
     }
 }

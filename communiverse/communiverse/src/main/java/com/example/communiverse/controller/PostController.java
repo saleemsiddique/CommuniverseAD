@@ -2,6 +2,7 @@ package com.example.communiverse.controller;
 
 import com.example.communiverse.domain.Post;
 import com.example.communiverse.domain.User;
+import com.example.communiverse.exception.PostNotFoundException;
 import com.example.communiverse.exception.UserNotFoundException;
 import com.example.communiverse.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,7 +23,7 @@ public class PostController {
     @GetMapping("/{id}")
     public ResponseEntity<Post> getTop5CommunitiesByFollowers(@PathVariable String id) {
         Post post = postService.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(id));
+                .orElseThrow(() -> new PostNotFoundException(id));
         return ResponseEntity.ok(post);
     }
 

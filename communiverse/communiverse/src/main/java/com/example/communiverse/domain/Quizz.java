@@ -13,7 +13,7 @@ import java.util.List;
 public class Quizz {
 
     @NotNull
-    private String _id;
+    private String id;
 
     @NotBlank
     private String description;
