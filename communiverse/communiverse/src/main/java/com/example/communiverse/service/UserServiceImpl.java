@@ -17,7 +17,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User addUser(User user) {
-        user.setId(IdGenerator.generateUserId());
+        user.setId(IdGenerator.generateId());
         return userRepository.save(user);
     }
 

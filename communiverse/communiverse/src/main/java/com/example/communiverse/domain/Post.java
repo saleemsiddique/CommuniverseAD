@@ -17,7 +17,7 @@ public class Post {
     private String id;
 
     @NotNull
-    private Community community;
+    private String community_id;
 
     @NotBlank
     private String author_id;
@@ -30,7 +30,7 @@ public class Post {
 
     private PostInteractions postInteractions;
 
-    private User repost_usuario_id;
+    private String repost_user_id;
 
     private Quizz quizz;
 

@@ -20,7 +20,7 @@ public class CommunityServiceImpl implements CommunityService{
 
     @Override
     public Community createCommunity(Community community) {
-        community.setId(IdGenerator.generateUserId());
+        community.setId(IdGenerator.generateId());
         return communityRepository.save(community);
     }
 }
