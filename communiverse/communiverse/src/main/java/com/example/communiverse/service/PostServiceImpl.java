@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -18,6 +19,11 @@ public class PostServiceImpl implements PostService{
     @Override
     public Optional<Post> findById(String id) {
         return postRepository.findById(id);
+    }
+
+    @Override
+    public List<Post> findByAuthor_IdOrderByDateTimeDesc(String id) {
+        return postRepository.findByAuthor_IdOrderByDateTimeDesc(id);
     }
 
     @Override

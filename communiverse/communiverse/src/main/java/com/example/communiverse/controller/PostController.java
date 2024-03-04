@@ -1,5 +1,6 @@
 package com.example.communiverse.controller;
 
+import com.example.communiverse.domain.Community;
 import com.example.communiverse.domain.Post;
 import com.example.communiverse.domain.User;
 import com.example.communiverse.exception.PostNotFoundException;
@@ -10,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/post")
@@ -25,6 +28,13 @@ public class PostController {
         Post post = postService.findById(id)
                 .orElseThrow(() -> new PostNotFoundException(id));
         return ResponseEntity.ok(post);
+    }
+
+    @Operation(summary = "Obtains all posts from one user")
+    @GetMapping("/posts/{id}")
+    public ResponseEntity<List<Post>> getMyPosts(@PathVariable String id) {
+        List<Post> myPosts = postService.findByAuthor_IdOrderByDateTimeDesc(id);
+        return ResponseEntity.ok(myPosts);
     }
 
     @Operation(summary = "Creates a post")
