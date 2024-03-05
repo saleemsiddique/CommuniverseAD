@@ -27,6 +27,11 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
+    public List<Post> findAllByRepostUserId(String repostUserId) {
+        return postRepository.findAllByRepostUserId(repostUserId);
+    }
+
+    @Override
     public Post addPost(Post post) {
         post.setId(IdGenerator.generateId());
         post.setDateTime(LocalDateTime.now());

@@ -12,6 +12,8 @@ import java.util.Optional;
 public interface PostRepository extends MongoRepository<Post, String> {
     @Query("{'author_id' : ?0}")
     List<Post> findByAuthor_IdOrderByDateTimeDesc(String id);
+    @Query("{'repost_user_id' : ?0}")
+    List<Post> findAllByRepostUserId(String repostUserId);
 
     Optional<Post> findById(String id);
 }

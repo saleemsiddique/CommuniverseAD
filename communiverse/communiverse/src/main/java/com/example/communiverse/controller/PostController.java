@@ -37,6 +37,25 @@ public class PostController {
         return ResponseEntity.ok(myPosts);
     }
 
+    @Operation(summary = "Obtains all reposts from one user")
+    @GetMapping("/reposts/{id}")
+    public ResponseEntity<List<Post>> getMyRePosts(@PathVariable String id) {
+        List<Post> myRePosts = postService.findAllByRepostUserId(id);
+        return ResponseEntity.ok(myRePosts);
+    }
+
+    /*
+        @Operation(summary = "Obtains all reposts from one user")
+    @GetMapping("/reposts/{id}/{page}/{size}")
+    public ResponseEntity<Page<Post>> getMyRePosts(@PathVariable String id,
+                                                   @PathVariable int page,
+                                                   @PathVariable int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> myRePosts = postService.findAllByRepostUserId(id, pageable);
+        return ResponseEntity.ok(myRePosts);
+    }
+     */
+
     @Operation(summary = "Creates a post")
     @PostMapping("")
     public ResponseEntity<Post> addPost(@RequestBody Post post){

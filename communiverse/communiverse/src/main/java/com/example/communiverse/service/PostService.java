@@ -13,5 +13,7 @@ public interface PostService {
 
     List<Post> findByAuthor_IdOrderByDateTimeDesc(String id);
 
+    List<Post> findAllByRepostUserId(String repostUserId);
+
     Post addPost(Post post);
 }
