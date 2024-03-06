@@ -37,10 +37,10 @@ public class CommunityController {
         return ResponseEntity.ok(top5Communities);
     }
 
-    @GetMapping("/myCommunities")
-    public List<Community> getTop5CommunitiesWithMostFollowers(String userId) {
+    @GetMapping("/mycommunities/{id}")
+    public List<Community> getTop5CommunitiesWithMostFollowers(@PathVariable String id) {
         // Get user by ID
-        User user = userService.findById(userId).orElse(null);
+        User user = userService.findById(id).orElse(null);
         if (user == null) {
             // Handle user not found
             return null;
@@ -49,7 +49,7 @@ public class CommunityController {
         // Get all community IDs associated with the user
         List<String> communityIds = userService.getAllCommunityIds(user);
 
-        return communityService.getTop5CommunitiesWithMostFollowers(communityIds);
+        return communityService.getMyCommunities(communityIds);
     }
 
     @Operation(summary = "Creates community")

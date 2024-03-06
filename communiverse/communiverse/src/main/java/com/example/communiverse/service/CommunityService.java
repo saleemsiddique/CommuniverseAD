@@ -10,6 +10,6 @@ public interface CommunityService {
     Optional<Community> findById(String id);
     List<Community> findTop5ByOrderByFollowersDesc();
 
-    public List<Community> getTop5CommunitiesWithMostFollowers(List<String> communityIds);
+    public List<Community> getMyCommunities(List<String> communityIds);
     Community createCommunity(Community community);
 }

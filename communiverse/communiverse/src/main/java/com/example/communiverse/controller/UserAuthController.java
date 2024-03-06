@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -54,7 +56,7 @@ public class UserAuthController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody UserLoginRequest userLoginRequest) {
-        String loginInput = userLoginRequest.getEmailOrUsername();
+        String loginInput = userLoginRequest.getEmailOrUsername().toLowerCase();
         Authentication authentication = null;
 
         try {
@@ -62,7 +64,7 @@ public class UserAuthController {
                     .orElseThrow(() -> new UsernameNotFoundException("User Not Found with email or username : " + loginInput));
 
             authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(userLoginRequest.getEmailOrUsername(), userLoginRequest.getPassword()));
+                    new UsernamePasswordAuthenticationToken(userLoginRequest.getEmailOrUsername().toLowerCase(), userLoginRequest.getPassword()));
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String jwt = jwtUtils.generateJwtToken(authentication);
@@ -73,9 +75,9 @@ public class UserAuthController {
                     userDetails.getId(),
                     userDetails.getName(),
                     userDetails.getLastname(),
-                    userDetails.getEmail(),
+                    userDetails.getEmail().toLowerCase(),
                     userDetails.getPassword(),
-                    userDetails.getUsername()));
+                    userDetails.getUsername().toLowerCase()));
         } catch (UsernameNotFoundException ex) {
             return ResponseEntity
                     .badRequest()
@@ -87,25 +89,41 @@ public class UserAuthController {
         }
     }
 
+    private ResponseEntity<?> confirmingEmail(String email) {
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+        Pattern pattern = Pattern.compile(emailRegex);
+        Matcher matcher = pattern.matcher(email);
 
+        if (!matcher.matches()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body("Error: Email format is invalid");
+        }
+        return null; // Retorna null si el formato es válido
+    }
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody UserSignupRequest signUpRequestUser) {
-        if (userRepository.existsByEmail(signUpRequestUser.getEmail())) {
+        ResponseEntity<?> emailValidationResult = confirmingEmail(signUpRequestUser.getEmail());
+        if (emailValidationResult != null) {
+            return emailValidationResult;
+        }
+
+        if (userRepository.existsByEmail(signUpRequestUser.getEmail().toLowerCase())) {
             return ResponseEntity
                     .badRequest()
                     .body("Error: Email is already been used");
         }
 
-        if (userRepository.existsByUsername(signUpRequestUser.getUsername())) {
+        if (userRepository.existsByUsername(signUpRequestUser.getUsername().toLowerCase())) {
             return ResponseEntity
                     .badRequest()
                     .body("Error: Username is already been used");
         }
 
         // Create new user's account
-        User user = new User(signUpRequestUser.getName(), signUpRequestUser.getLastName(), signUpRequestUser.getEmail(),
-                encoder.encode(signUpRequestUser.getPassword()), signUpRequestUser.getUsername());
+        User user = new User(signUpRequestUser.getName(), signUpRequestUser.getLastName(), signUpRequestUser.getEmail().toLowerCase(),
+                encoder.encode(signUpRequestUser.getPassword()), signUpRequestUser.getUsername().toLowerCase());
 
         userService.addUser(user);
 

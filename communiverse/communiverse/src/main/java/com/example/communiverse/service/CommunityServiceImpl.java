@@ -27,7 +27,7 @@ public class CommunityServiceImpl implements CommunityService{
         return communityRepository.findTop5ByOrderByFollowersDesc();
     }
 
-    public List<Community> getTop5CommunitiesWithMostFollowers(List<String> communityIds) {
+    public List<Community> getMyCommunities(List<String> communityIds) {
         return communityRepository.findAllByIdIn(communityIds);
     }
 

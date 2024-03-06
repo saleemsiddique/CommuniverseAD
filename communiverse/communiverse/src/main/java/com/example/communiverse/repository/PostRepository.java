@@ -14,8 +14,6 @@ import java.util.Optional;
 public interface PostRepository extends MongoRepository<Post, String> {
     @Query("{'author_id' : ?0}")
     Page<Post> findByAuthor_IdOrderByDateTimeDesc(String id, Pageable pageable);
-    @Query("{'repost_user_id' : ?0}")
-    List<Post> findAllByRepostUserId(String repostUserId);
 
     @Query("{'repost_user_id' : ?0}")
     Page<Post> findAllByRepostUserIdPaged(String repostUserId, Pageable pageable);

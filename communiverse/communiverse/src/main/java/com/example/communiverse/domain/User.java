@@ -21,11 +21,11 @@ public class User {
     private String id;
 
     @NotBlank
-    @Size(max = 50)
+    @Size(min = 3, max = 50)
     private String name;
 
     @NotBlank
-    @Size(max = 50)
+    @Size(min = 3, max = 50)
     private String lastName;
 
     @NotBlank
@@ -33,11 +33,11 @@ public class User {
     private String email;
 
     @NotBlank
-    @Size(min = 8, max = 20)
+    @Size(min = 6, max = 20)
     private String password;
 
     @NotBlank
-    @Size(max = 20)
+    @Size(min = 3, max = 20)
     private String username;
 
     @Lob
