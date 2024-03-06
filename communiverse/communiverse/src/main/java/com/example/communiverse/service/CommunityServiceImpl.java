@@ -5,8 +5,11 @@ import com.example.communiverse.repository.CommunityRepository;
 import com.example.communiverse.utils.IdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CommunityServiceImpl implements CommunityService{
@@ -22,6 +25,10 @@ public class CommunityServiceImpl implements CommunityService{
     @Override
     public List<Community> findTop5ByOrderByFollowersDesc() {
         return communityRepository.findTop5ByOrderByFollowersDesc();
+    }
+
+    public List<Community> getTop5CommunitiesWithMostFollowers(List<String> communityIds) {
+        return communityRepository.findAllByIdIn(communityIds);
     }
 
     @Override

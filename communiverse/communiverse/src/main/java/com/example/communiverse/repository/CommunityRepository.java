@@ -11,5 +11,8 @@ import java.util.Optional;
 public interface CommunityRepository extends MongoRepository<Community, String> {
 
     Optional<Community> findById(String id);
+
+    List<Community> findAllByIdIn(List<String> ids);
+
     List<Community> findTop5ByOrderByFollowersDesc();
 }

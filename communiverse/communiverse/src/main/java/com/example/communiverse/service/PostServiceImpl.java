@@ -4,6 +4,8 @@ import com.example.communiverse.domain.Post;
 import com.example.communiverse.repository.PostRepository;
 import com.example.communiverse.utils.IdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,13 +24,13 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public List<Post> findByAuthor_IdOrderByDateTimeDesc(String id) {
-        return postRepository.findByAuthor_IdOrderByDateTimeDesc(id);
+    public Page<Post> findByAuthor_IdOrderByDateTimeDesc(String id, Pageable pageable) {
+        return postRepository.findByAuthor_IdOrderByDateTimeDesc(id, pageable);
     }
 
     @Override
-    public List<Post> findAllByRepostUserId(String repostUserId) {
-        return postRepository.findAllByRepostUserId(repostUserId);
+    public Page<Post> findAllByRepostUserIdPaged(String repostUserId, Pageable pageable) {
+        return postRepository.findAllByRepostUserIdPaged(repostUserId, pageable);
     }
 
     @Override

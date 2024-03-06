@@ -1,10 +1,10 @@
 package com.example.communiverse.controller;
 
 import com.example.communiverse.domain.Community;
-import com.example.communiverse.domain.Post;
+import com.example.communiverse.domain.User;
 import com.example.communiverse.exception.CommunityNotFoundException;
-import com.example.communiverse.exception.UserNotFoundException;
 import com.example.communiverse.service.CommunityService;
+import com.example.communiverse.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +18,8 @@ import java.util.List;
 public class CommunityController {
     @Autowired
     private CommunityService communityService;
+    @Autowired
+    private UserService userService;
 
     @Operation(summary = "Obtains Community by ID")
     @GetMapping("/{id}")
@@ -34,6 +36,22 @@ public class CommunityController {
         List<Community> top5Communities = communityService.findTop5ByOrderByFollowersDesc();
         return ResponseEntity.ok(top5Communities);
     }
+
+    @GetMapping("/myCommunities")
+    public List<Community> getTop5CommunitiesWithMostFollowers(String userId) {
+        // Get user by ID
+        User user = userService.findById(userId).orElse(null);
+        if (user == null) {
+            // Handle user not found
+            return null;
+        }
+
+        // Get all community IDs associated with the user
+        List<String> communityIds = userService.getAllCommunityIds(user);
+
+        return communityService.getTop5CommunitiesWithMostFollowers(communityIds);
+    }
+
     @Operation(summary = "Creates community")
     @PostMapping("")
     public ResponseEntity<Community> createCommunity(@RequestBody Community community) {

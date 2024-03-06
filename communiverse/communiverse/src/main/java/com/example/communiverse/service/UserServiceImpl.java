@@ -6,6 +6,8 @@ import com.example.communiverse.utils.IdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -19,6 +21,21 @@ public class UserServiceImpl implements UserService{
     public User addUser(User user) {
         user.setId(IdGenerator.generateId());
         return userRepository.save(user);
+    }
+
+    public List<String> getAllCommunityIds(User user) {
+        List<String> allCommunityIds = new ArrayList<>();
+
+        // Add all community IDs from createdCommunities
+        allCommunityIds.addAll(user.getCreatedCommunities());
+
+        // Add all community IDs from moderatedCommunities
+        allCommunityIds.addAll(user.getModeratedCommunities());
+
+        // Add all community IDs from memberCommunities
+        allCommunityIds.addAll(user.getMemberCommunities());
+
+        return allCommunityIds;
     }
 
     @Override
