@@ -3,6 +3,7 @@ package com.example.communiverse.controller;
 import com.example.communiverse.domain.User;
 import com.example.communiverse.domain.UserInteractions;
 import com.example.communiverse.payload.request.UserLoginRequest;
+import com.example.communiverse.payload.request.UserModifyRequest;
 import com.example.communiverse.payload.request.UserSignupRequest;
 import com.example.communiverse.payload.response.JwtResponse;
 import com.example.communiverse.payload.response.MessageResponse;
@@ -140,5 +141,31 @@ public class UserAuthController {
         // Devolver el JSON del cliente en el cuerpo de la respuesta
         return ResponseEntity.ok(clienteJson);
     }
+
+    @PutMapping("edit/{id}")
+    public ResponseEntity<?> modifyUser(@PathVariable String id, @Valid @RequestBody UserModifyRequest userModifyRequest) {
+
+        Optional<User> optionalUser = userRepository.findById(id);
+
+        if (!optionalUser.isPresent()) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(new MessageResponse("Error: User not found"));
+        }
+
+        // Obtiene el cliente existente
+        User user = optionalUser.get();
+
+        // Actualiza los campos del cliente con los valores proporcionados en la solicitud
+        user.setName(userModifyRequest.getFirstName());
+        user.setLastName(userModifyRequest.getLastName());
+        user.setBiography(userModifyRequest.getBiography());
+        user.setUsername(userModifyRequest.getUsername());
+
+        userRepository.save(user);
+
+        return ResponseEntity.ok(new MessageResponse("Cliente modificado exitosamente"));
+    }
+
 }
 
