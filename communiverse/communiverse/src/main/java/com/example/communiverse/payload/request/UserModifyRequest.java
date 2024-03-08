@@ -1,11 +1,13 @@
 package com.example.communiverse.payload.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Size;
 
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
 public class UserModifyRequest {
     @Size(max = 50)

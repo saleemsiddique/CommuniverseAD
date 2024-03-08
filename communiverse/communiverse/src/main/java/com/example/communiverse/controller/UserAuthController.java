@@ -3,6 +3,7 @@ package com.example.communiverse.controller;
 import com.example.communiverse.domain.User;
 import com.example.communiverse.domain.UserInteractions;
 import com.example.communiverse.payload.request.UserLoginRequest;
+import com.example.communiverse.payload.request.UserModifyPhotoRequest;
 import com.example.communiverse.payload.request.UserModifyRequest;
 import com.example.communiverse.payload.request.UserSignupRequest;
 import com.example.communiverse.payload.response.JwtResponse;
@@ -167,5 +168,25 @@ public class UserAuthController {
         return ResponseEntity.ok(new MessageResponse("Cliente modificado exitosamente"));
     }
 
+    @PutMapping("editphoto/{id}")
+    public ResponseEntity<?> modifyUser(@PathVariable String id, @Valid @RequestBody UserModifyPhotoRequest userModifyPhotoRequest) {
+
+        Optional<User> optionalUser = userRepository.findById(id);
+
+        if (!optionalUser.isPresent()) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(new MessageResponse("Error: User not found"));
+        }
+
+        // Obtiene el cliente existente
+        User user = optionalUser.get();
+
+        // Actualiza los campos del cliente con los valores proporcionados en la solicitud
+        user.setPhoto(userModifyPhotoRequest.getPhoto());
+        userRepository.save(user);
+
+        return ResponseEntity.ok(new MessageResponse("Cliente modificado exitosamente"));
+    }
 }
 
