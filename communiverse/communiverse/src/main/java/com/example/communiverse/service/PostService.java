@@ -14,9 +14,9 @@ public interface PostService {
 
     Optional<Post> findById(String id);
 
-    Page<Post> findByAuthor_IdOrderByDateTimeDesc(String id, Pageable pageable);
+    List<Post> findByAuthor_IdAndIsCommentFalseOrderByDateTimeDesc(String id, int page, int size);
 
-    Page<Post> findAllByRepostUserIdPaged(String repostUserId, Pageable pageable);
+    List<Post> findAllByRepostUserIdPaged(String repostUserId, int page, int size);
 
     List<Post> getCommentsByPostId(String postId, int page, int size);
     Post addPost(Post post);

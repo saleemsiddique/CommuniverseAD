@@ -26,13 +26,17 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public Page<Post> findByAuthor_IdOrderByDateTimeDesc(String id, Pageable pageable) {
-        return postRepository.findByAuthor_IdAndIsCommentFalseOrderByDateTimeDesc(id, pageable);
+    public List<Post> findByAuthor_IdAndIsCommentFalseOrderByDateTimeDesc(String id, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> postPage = postRepository.findByAuthor_IdAndIsCommentFalseOrderByDateTimeDesc(id, pageable);
+        return postPage.getContent();
     }
 
     @Override
-    public Page<Post> findAllByRepostUserIdPaged(String repostUserId, Pageable pageable) {
-        return postRepository.findAllByRepostUserIdPaged(repostUserId, pageable);
+    public List<Post> findAllByRepostUserIdPaged(String repostUserId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> postPage = postRepository.findAllByRepostUserIdPaged(repostUserId, pageable);
+        return postPage.getContent();
     }
 
     @Override

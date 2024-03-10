@@ -18,8 +18,5 @@ public interface PostRepository extends MongoRepository<Post, String> {
     @Query("{'repost_user_id' : ?0}")
     Page<Post> findAllByRepostUserIdPaged(String repostUserId, Pageable pageable);
 
-    @Query("{'postInteractions.comments_id' : ?0}")
-    Page<Post> findPostsByCommentId(String commentId, Pageable pageable);
-
     @Query("{'id' : ?0}")
     Post findPostById(String postId);}
