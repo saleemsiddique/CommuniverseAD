@@ -39,4 +39,5 @@ public class Post {
 
     private LocalDateTime dateTime;
 
+    private boolean isComment;
 }

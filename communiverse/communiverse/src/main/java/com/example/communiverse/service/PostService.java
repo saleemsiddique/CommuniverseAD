@@ -18,5 +18,6 @@ public interface PostService {
 
     Page<Post> findAllByRepostUserIdPaged(String repostUserId, Pageable pageable);
 
+    List<Post> getCommentsByPostId(String postId, int page, int size);
     Post addPost(Post post);
 }

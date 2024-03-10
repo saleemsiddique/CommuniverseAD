@@ -12,11 +12,14 @@ import java.util.Optional;
 
 @Repository
 public interface PostRepository extends MongoRepository<Post, String> {
-    @Query("{'author_id' : ?0}")
-    Page<Post> findByAuthor_IdOrderByDateTimeDesc(String id, Pageable pageable);
+    @Query("{'author_id' : ?0, 'isComment' : {$ne : true}}")
+    Page<Post> findByAuthor_IdAndIsCommentFalseOrderByDateTimeDesc(String id, Pageable pageable);
 
     @Query("{'repost_user_id' : ?0}")
     Page<Post> findAllByRepostUserIdPaged(String repostUserId, Pageable pageable);
 
-    Optional<Post> findById(String id);
-}
+    @Query("{'postInteractions.comments_id' : ?0}")
+    Page<Post> findPostsByCommentId(String commentId, Pageable pageable);
+
+    @Query("{'id' : ?0}")
+    Post findPostById(String postId);}

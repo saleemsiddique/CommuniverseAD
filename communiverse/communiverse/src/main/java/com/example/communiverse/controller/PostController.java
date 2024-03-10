@@ -27,7 +27,7 @@ public class PostController {
 
     @Operation(summary = "Obtains Post by ID")
     @GetMapping("/{id}")
-    public ResponseEntity<Post> getTop5CommunitiesByFollowers(@PathVariable String id) {
+    public ResponseEntity<Post> getPostById(@PathVariable String id) {
         Post post = postService.findById(id)
                 .orElseThrow(() -> new PostNotFoundException(id));
         return ResponseEntity.ok(post);
@@ -53,6 +53,15 @@ public class PostController {
         return ResponseEntity.ok(myRePosts);
     }
 
+    @Operation(summary = "Obtains all comments from one post")
+    @GetMapping("/comments/{postId}/{page}/{size}")
+    public List<Post> getCommentsByPostId(
+            @PathVariable String postId,
+            @PathVariable int page,
+            @PathVariable int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return postService.getCommentsByPostId(postId, page, size);
+    }
 
     @Operation(summary = "Creates a post")
     @PostMapping("")

@@ -11,5 +11,5 @@ import java.util.ArrayList;
 public class PostInteractions {
     private int likes;
     private int reposts;
-    private ArrayList<Post> comments;
+    private ArrayList<String> comments_id;
 }
