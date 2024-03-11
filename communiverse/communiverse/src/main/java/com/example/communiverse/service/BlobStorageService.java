@@ -5,7 +5,8 @@ import org.springframework.stereotype.Service;
 import java.io.InputStream;
 @Service
 public interface BlobStorageService {
-    String uploadPhoto(InputStream inputStream, String fileName);
+
+    String uploadPhoto(String urlBase64, String fileName);
 
     void deletePhoto(String blobUrl);
 

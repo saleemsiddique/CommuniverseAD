@@ -25,6 +25,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.*;
@@ -167,30 +168,37 @@ public class UserAuthController {
     }
 
     @PutMapping("editphoto/{id}")
-    public ResponseEntity<?> modifyUser(@PathVariable String id, @Valid @RequestBody UserModifyPhotoRequest userModifyPhotoRequest) {
-        Optional<User> optionalUser = userRepository.findById(id);
+    public ResponseEntity<?> modifyUserPhoto(@PathVariable String id, @RequestBody String base64Image) {
+        String photoUrl = "";
+        try {
+            Optional<User> optionalUser = userRepository.findById(id);
 
-        if (!optionalUser.isPresent()) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(new MessageResponse("Error: User not found"));
-        }
+            if (!optionalUser.isPresent()) {
+                return ResponseEntity
+                        .status(HttpStatus.NOT_FOUND)
+                        .body(new MessageResponse("Error: User not found"));
+            }
 
-        // Obtiene el usuario existente
-        User user = optionalUser.get();
+            // Obtiene el usuario existente
+            User user = optionalUser.get();
 
-        // Carga la nueva foto del usuario si está presente en la solicitud
-        if (userModifyPhotoRequest.getPhoto() != null) {
-            // Sube la nueva foto del usuario al almacenamiento de blobs
-            String photoUrl = blobStorageService.uploadPhoto(userModifyPhotoRequest.getPhoto(), user.getId() + "-profile-photo.jpg");
-            // Actualiza la URL de la foto en el usuario
+            // Verifica si la cadena base64 de la imagen es válida
+            if (!base64Image.equalsIgnoreCase("{\"\":\"\"}")) {
+                // Sube la nueva imagen del usuario al almacenamiento de blobs
+                photoUrl = blobStorageService.uploadPhoto(base64Image, id + "-profile-photo.jpg");
+            }
             user.setPhoto(photoUrl);
+
+            // Guarda los cambios en el usuario en la base de datos
+            userRepository.save(user);
+
+            return ResponseEntity.ok(new MessageResponse("User photo modified successfully"));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new MessageResponse("Error modifying user photo: " + e.getMessage()));
         }
-
-        // Guarda los cambios en el usuario en la base de datos
-        userRepository.save(user);
-
-        return ResponseEntity.ok(new MessageResponse("User photo modified successfully"));
     }
+
 }
 

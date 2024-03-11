@@ -5,6 +5,7 @@ import com.example.communiverse.utils.IdGenerator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.io.*;
+import java.util.Base64;
 import java.util.UUID;
 @Service
 public class BlobStorageServiceImpl implements BlobStorageService {
@@ -15,7 +16,8 @@ public class BlobStorageServiceImpl implements BlobStorageService {
     @Value("${spring.cloud.azure.storage.blob-container-name}")
     private String blobContainerName;
 
-    public String uploadPhoto(InputStream inputStream, String fileName) {
+    public String uploadPhoto(String urlBase64, String fileName) {
+        System.out.println("LLEGO A UPLOAD");
         BlobServiceClient blobServiceClient = new BlobServiceClientBuilder()
                 .connectionString(azureBlobConnectionString)
                 .buildClient();
@@ -24,9 +26,15 @@ public class BlobStorageServiceImpl implements BlobStorageService {
         String blobName = IdGenerator.generateId() + "-" + fileName;
         BlobClient blobClient = containerClient.getBlobClient(blobName);
 
-        blobClient.upload(inputStream, -1, true);
+        String cleanBase64 = urlBase64.replaceAll("[^A-Za-z0-9+/=]", "");
+        byte[] imageBytes = Base64.getDecoder().decode(cleanBase64);
+        InputStream imageInputStream = new ByteArrayInputStream(imageBytes);
+        blobClient.upload(imageInputStream, imageBytes.length, true);
+        System.out.println(blobClient.getProperties().getBlobType());
 
-        return blobClient.getBlobUrl();
+        String blobUrl = blobClient.getBlobUrl();
+        System.out.println("Blob URL: " + blobUrl);
+        return blobUrl;
     }
 
     public void deletePhoto(String blobUrl) {
