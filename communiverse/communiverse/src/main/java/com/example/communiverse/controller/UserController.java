@@ -1,6 +1,5 @@
 package com.example.communiverse.controller;
 
-import com.example.communiverse.domain.Community;
 import com.example.communiverse.domain.User;
 import com.example.communiverse.exception.UserNotFoundException;
 import com.example.communiverse.service.UserService;
@@ -11,9 +10,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/user")

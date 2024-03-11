@@ -1,7 +1,6 @@
 package com.example.communiverse.controller;
 
 import com.example.communiverse.domain.User;
-import com.example.communiverse.domain.UserInteractions;
 import com.example.communiverse.payload.request.UserLoginRequest;
 import com.example.communiverse.payload.request.UserModifyPhotoRequest;
 import com.example.communiverse.payload.request.UserModifyRequest;
@@ -11,18 +10,17 @@ import com.example.communiverse.payload.response.MessageResponse;
 import com.example.communiverse.repository.UserRepository;
 import com.example.communiverse.security.jwt.JwtUtils;
 import com.example.communiverse.security.services.UserDetailsImpl;
+import com.example.communiverse.service.BlobStorageService;
 import com.example.communiverse.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,9 +30,6 @@ import javax.validation.Valid;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 //https://github.com/bezkoder/spring-boot-spring-security-jwt-authentication
@@ -55,6 +50,9 @@ public class UserAuthController {
 
     @Autowired
     JwtUtils jwtUtils;
+
+    @Autowired
+    private BlobStorageService blobStorageService;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody UserLoginRequest userLoginRequest) {
@@ -170,7 +168,6 @@ public class UserAuthController {
 
     @PutMapping("editphoto/{id}")
     public ResponseEntity<?> modifyUser(@PathVariable String id, @Valid @RequestBody UserModifyPhotoRequest userModifyPhotoRequest) {
-
         Optional<User> optionalUser = userRepository.findById(id);
 
         if (!optionalUser.isPresent()) {
@@ -179,14 +176,21 @@ public class UserAuthController {
                     .body(new MessageResponse("Error: User not found"));
         }
 
-        // Obtiene el cliente existente
+        // Obtiene el usuario existente
         User user = optionalUser.get();
 
-        // Actualiza los campos del cliente con los valores proporcionados en la solicitud
-        user.setPhoto(userModifyPhotoRequest.getPhoto());
+        // Carga la nueva foto del usuario si está presente en la solicitud
+        if (userModifyPhotoRequest.getPhoto() != null) {
+            // Sube la nueva foto del usuario al almacenamiento de blobs
+            String photoUrl = blobStorageService.uploadPhoto(userModifyPhotoRequest.getPhoto(), user.getId() + "-profile-photo.jpg");
+            // Actualiza la URL de la foto en el usuario
+            user.setPhoto(photoUrl);
+        }
+
+        // Guarda los cambios en el usuario en la base de datos
         userRepository.save(user);
 
-        return ResponseEntity.ok(new MessageResponse("Cliente modificado exitosamente"));
+        return ResponseEntity.ok(new MessageResponse("User photo modified successfully"));
     }
 }
 
