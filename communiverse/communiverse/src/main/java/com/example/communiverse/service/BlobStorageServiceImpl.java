@@ -23,8 +23,7 @@ public class BlobStorageServiceImpl implements BlobStorageService {
                 .buildClient();
 
         BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(blobContainerName);
-        String blobName = IdGenerator.generateId() + "-" + fileName;
-        BlobClient blobClient = containerClient.getBlobClient(blobName);
+        BlobClient blobClient = containerClient.getBlobClient(fileName);
 
         String cleanBase64 = urlBase64.replaceAll("[^A-Za-z0-9+/=]", "");
         byte[] imageBytes = Base64.getDecoder().decode(cleanBase64);
