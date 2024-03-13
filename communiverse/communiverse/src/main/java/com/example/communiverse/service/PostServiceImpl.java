@@ -20,6 +20,9 @@ public class PostServiceImpl implements PostService{
     @Autowired
     private PostRepository postRepository;
 
+    @Autowired
+    private BlobStorageService blobStorageService;
+
     @Override
     public Optional<Post> findById(String id) {
         return postRepository.findById(id);
@@ -61,6 +64,28 @@ public class PostServiceImpl implements PostService{
     public Post addPost(Post post) {
         post.setId(IdGenerator.generateId());
         post.setDateTime(LocalDateTime.now());
+
+        // Subir fotos
+        if (post.getPhotos() != null && !post.getPhotos().isEmpty()) {
+            List<String> uploadedPhotos = new ArrayList<>();
+            for (String photoBase64 : post.getPhotos()) {
+                String photoUrl = blobStorageService.uploadPhoto(photoBase64, IdGenerator.generateId());
+                uploadedPhotos.add(photoUrl);
+            }
+            post.setPhotos(uploadedPhotos);
+        }
+
+        // Subir videos
+        if (post.getVideos() != null && !post.getVideos().isEmpty()) {
+            List<String> uploadedVideos = new ArrayList<>();
+            for (String videoBase64 : post.getVideos()) {
+                String videoUrl = blobStorageService.uploadPhoto(videoBase64, IdGenerator.generateId());
+                uploadedVideos.add(videoUrl);
+            }
+            post.setVideos(uploadedVideos);
+        }
+
         return postRepository.save(post);
     }
+
 }
