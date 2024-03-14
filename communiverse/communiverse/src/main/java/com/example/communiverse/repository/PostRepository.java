@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Repository
 public interface PostRepository extends MongoRepository<Post, String> {
-    @Query("{'author_id' : ?0, 'isComment' : {$ne : true}}")
+    @Query(value = "{'author_id' : ?0, 'isComment' : {$ne : true}}", sort = "{'dateTime' : -1}")
     Page<Post> findByAuthor_IdAndIsCommentFalseOrderByDateTimeDesc(String id, Pageable pageable);
 
     @Query("{'repost_user_id' : ?0}")
