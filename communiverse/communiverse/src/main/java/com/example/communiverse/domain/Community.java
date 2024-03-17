@@ -18,14 +18,14 @@ public class Community {
     private String id;
 
     @NotBlank
-    @Size(max = 50)
+    @Size(max = 30)
     private String name;
 
     @NotBlank
     private String userCreator_id;
 
     @NotBlank
-    @Size(max = 255)
+    @Size(max = 200)
     private String description;
 
     @NotBlank
