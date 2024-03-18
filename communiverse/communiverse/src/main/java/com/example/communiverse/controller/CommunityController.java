@@ -23,7 +23,7 @@ public class CommunityController {
 
     @Operation(summary = "Obtains Community by ID")
     @GetMapping("/{id}")
-    public ResponseEntity<Community> getTop5CommunitiesByFollowers(@PathVariable String id) {
+    public ResponseEntity<Community> getCommunityById(@PathVariable String id) {
         Community community = communityService.findById(id)
                 .orElseThrow(() -> new CommunityNotFoundException(id));
         return ResponseEntity.ok(community);
@@ -38,7 +38,7 @@ public class CommunityController {
     }
 
     @GetMapping("/mycommunities/{id}")
-    public List<Community> getTop5CommunitiesWithMostFollowers(@PathVariable String id) {
+    public List<Community> getMyCommunities(@PathVariable String id) {
         // Get user by ID
         User user = userService.findById(id).orElse(null);
         if (user == null) {

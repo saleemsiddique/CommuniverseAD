@@ -17,6 +17,9 @@ public class CommunityServiceImpl implements CommunityService{
     @Autowired
     private CommunityRepository communityRepository;
 
+    @Autowired
+    private BlobStorageService blobStorageService;
+
     @Override
     public Optional<Community> findById(String id) {
         return communityRepository.findById(id);
@@ -34,6 +37,11 @@ public class CommunityServiceImpl implements CommunityService{
     @Override
     public Community createCommunity(Community community) {
         community.setId(IdGenerator.generateId());
+        String photoBase64 = community.getPhoto();
+        if(!community.getPhoto().equalsIgnoreCase("")) {
+            String photoUrl = blobStorageService.uploadPhoto(photoBase64, IdGenerator.generateId() + "-community_" + community.getId() + "-image.jpg");
+            community.setPhoto(photoUrl);
+        }
         return communityRepository.save(community);
     }
 }

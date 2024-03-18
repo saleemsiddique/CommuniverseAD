@@ -69,7 +69,7 @@ public class PostServiceImpl implements PostService{
         if (post.getPhotos() != null && !post.getPhotos().isEmpty()) {
             List<String> uploadedPhotos = new ArrayList<>();
             for (String photoBase64 : post.getPhotos()) {
-                String photoUrl = blobStorageService.uploadPhoto(photoBase64, IdGenerator.generateId() + "-image.jpg");
+                String photoUrl = blobStorageService.uploadPhoto(photoBase64, IdGenerator.generateId() + "-post_" + post.getId() + "-image.jpg");
                 uploadedPhotos.add(photoUrl);
             }
             post.setPhotos(uploadedPhotos);
@@ -79,7 +79,7 @@ public class PostServiceImpl implements PostService{
         if (post.getVideos() != null && !post.getVideos().isEmpty()) {
             List<String> uploadedVideos = new ArrayList<>();
             for (String videoBase64 : post.getVideos()) {
-                String videoUrl = blobStorageService.uploadPhoto(videoBase64, IdGenerator.generateId() + "-video.mp4");
+                String videoUrl = blobStorageService.uploadPhoto(videoBase64, IdGenerator.generateId() + "-post_" + post.getId() + "-video.mp4");
                 uploadedVideos.add(videoUrl);
             }
             post.setVideos(uploadedVideos);
