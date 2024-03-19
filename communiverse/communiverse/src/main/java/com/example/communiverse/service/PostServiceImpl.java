@@ -61,6 +61,18 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
+    public Page<Post> findAllByCommunityIdOrderByInteractionsDesc(String communityId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return postRepository.findAllByCommunityIdOrderByInteractionsDesc(communityId, pageable);
+    }
+
+    @Override
+    public Page<Post> findAllWithQuizzOrderByInteractionsDesc(String communityId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return postRepository.findAllWithQuizzOrderByInteractionsDesc(communityId, pageable);
+    }
+
+    @Override
     public Post addPost(Post post) {
         post.setId(IdGenerator.generateId());
         post.setDateTime(LocalDateTime.now());
@@ -83,6 +95,10 @@ public class PostServiceImpl implements PostService{
                 uploadedVideos.add(videoUrl);
             }
             post.setVideos(uploadedVideos);
+        }
+
+        if (!post.getQuizz().getQuestions().isEmpty()){
+            post.getQuizz().setId(IdGenerator.generateId());
         }
 
         return postRepository.save(post);

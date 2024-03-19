@@ -5,6 +5,7 @@ import com.example.communiverse.exception.PostNotFoundException;
 import com.example.communiverse.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -53,6 +54,26 @@ public class PostController {
             @PathVariable int size) {
         List<Post> comments = postService.getCommentsByPostId(postId, page, size);
         return ResponseEntity.ok(comments);
+    }
+
+    @Operation(summary = "Obtiene todos los posts de una comunidad paginados y ordenados por interacciones")
+    @GetMapping("/community/{communityId}/{page}/{size}")
+    public ResponseEntity<Page<Post>> getAllPostsFromCommunity(
+            @PathVariable String communityId,
+            @PathVariable int page,
+            @PathVariable int size) {
+        Page<Post> postsFromCommunity = postService.findAllByCommunityIdOrderByInteractionsDesc(communityId, page, size);
+        return ResponseEntity.ok(postsFromCommunity);
+    }
+
+    @Operation(summary = "Obtiene todos los posts de una comunidad que tengan quizz paginados y ordenados por interacciones")
+    @GetMapping("/community/{communityId}/quizz/{page}/{size}")
+    public ResponseEntity<Page<Post>> getAllQuizzFromCommunity(
+            @PathVariable String communityId,
+            @PathVariable int page,
+            @PathVariable int size) {
+        Page<Post> quizzFromCommunity = postService.findAllWithQuizzOrderByInteractionsDesc(communityId, page, size);
+        return ResponseEntity.ok(quizzFromCommunity);
     }
 
     @Operation(summary = "Creates a post")
