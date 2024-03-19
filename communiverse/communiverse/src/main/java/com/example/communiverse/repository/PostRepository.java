@@ -15,19 +15,19 @@ public interface PostRepository extends MongoRepository<Post, String> {
     @Query(value = "{'author_id' : ?0, 'isComment' : {$ne : true}}", sort = "{'dateTime' : -1}")
     Page<Post> findByAuthor_IdAndIsCommentFalseOrderByDateTimeDesc(String id, Pageable pageable);
 
-    @Query("{'repost_user_id' : ?0}")
+    @Query(value = "{'repost_user_id' : ?0}", sort = "{'dateTime' : -1}")
     Page<Post> findAllByRepostUserIdPaged(String repostUserId, Pageable pageable);
 
     @Query("{'id' : ?0}")
     Post findPostById(String postId);
 
-    @Query(value = "{ 'community_id' : ?0 }, { $addFields: { 'totalInteractions': { $sum: ['$postInteractions.likes', '$postInteractions.reposts', { $size: '$postInteractions.comments_id' }] } } }, { $sort: { 'totalInteractions': -1 } }")
+    @Query(value = "{ 'community_id' : ?0 }", sort = "{'postInteractions.likes' : -1, 'postInteractions.reposts' : -1, 'postInteractions.comments_id' : -1}")
     Page<Post> findAllByCommunityIdOrderByInteractionsDesc(String communityId, Pageable pageable);
 
-    @Query(value = "{ 'community_id' : ?0, 'quizz.questions': { $exists: true, $not: { $size: 0 } } }, { $addFields: { 'totalInteractions': { $sum: ['$postInteractions.likes', '$postInteractions.reposts', { $size: '$postInteractions.comments_id' }] } } }, { $sort: { 'totalInteractions': -1 } }")
+    @Query(value = "{ 'community_id' : ?0, 'quizz.questions': { $exists: true, $not: { $size: 0 } } }", sort = "{'postInteractions.likes' : -1, 'postInteractions.reposts' : -1, 'postInteractions.comments_id' : -1}")
     Page<Post> findAllWithQuizzOrderByInteractionsDesc(String communityId, Pageable pageable);
 
-    @Query(value = "{ 'community_id' : ?0, 'author_id': { $in: ?1 } }")
+    @Query(value = "{ 'community_id' : ?0, 'author_id': { $in: ?1 } }", sort = "{'dateTime' : -1}")
     Page<Post> findPostsByCommunityAndFollowedUsers(String communityId, List<String> followedUsersIds, Pageable pageable);
 
 }
