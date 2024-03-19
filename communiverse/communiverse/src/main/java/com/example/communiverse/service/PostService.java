@@ -20,9 +20,9 @@ public interface PostService {
 
     List<Post> getCommentsByPostId(String postId, int page, int size);
 
-    Page<Post> findAllByCommunityIdOrderByInteractionsDesc(String communityId, int page, int size);
+    List<Post> findAllByCommunityIdOrderByInteractionsDesc(String communityId, int page, int size);
 
-    Page<Post> findAllWithQuizzOrderByInteractionsDesc(String communityId, int page, int size);
+    List<Post> findAllWithQuizzOrderByInteractionsDesc(String communityId, int page, int size);
 
     Post addPost(Post post);
 }

@@ -61,15 +61,15 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public Page<Post> findAllByCommunityIdOrderByInteractionsDesc(String communityId, int page, int size) {
+    public List<Post> findAllByCommunityIdOrderByInteractionsDesc(String communityId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return postRepository.findAllByCommunityIdOrderByInteractionsDesc(communityId, pageable);
+        return postRepository.findAllByCommunityIdOrderByInteractionsDesc(communityId, pageable).getContent();
     }
 
     @Override
-    public Page<Post> findAllWithQuizzOrderByInteractionsDesc(String communityId, int page, int size) {
+    public List<Post> findAllWithQuizzOrderByInteractionsDesc(String communityId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return postRepository.findAllWithQuizzOrderByInteractionsDesc(communityId, pageable);
+        return postRepository.findAllWithQuizzOrderByInteractionsDesc(communityId, pageable).getContent();
     }
 
     @Override

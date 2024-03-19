@@ -58,21 +58,21 @@ public class PostController {
 
     @Operation(summary = "Obtiene todos los posts de una comunidad paginados y ordenados por interacciones")
     @GetMapping("/community/{communityId}/{page}/{size}")
-    public ResponseEntity<Page<Post>> getAllPostsFromCommunity(
+    public ResponseEntity<List<Post>> getAllPostsFromCommunity(
             @PathVariable String communityId,
             @PathVariable int page,
             @PathVariable int size) {
-        Page<Post> postsFromCommunity = postService.findAllByCommunityIdOrderByInteractionsDesc(communityId, page, size);
+        List<Post> postsFromCommunity = postService.findAllByCommunityIdOrderByInteractionsDesc(communityId, page, size);
         return ResponseEntity.ok(postsFromCommunity);
     }
 
     @Operation(summary = "Obtiene todos los posts de una comunidad que tengan quizz paginados y ordenados por interacciones")
     @GetMapping("/community/{communityId}/quizz/{page}/{size}")
-    public ResponseEntity<Page<Post>> getAllQuizzFromCommunity(
+    public ResponseEntity<List<Post>> getAllQuizzFromCommunity(
             @PathVariable String communityId,
             @PathVariable int page,
             @PathVariable int size) {
-        Page<Post> quizzFromCommunity = postService.findAllWithQuizzOrderByInteractionsDesc(communityId, page, size);
+        List<Post> quizzFromCommunity = postService.findAllWithQuizzOrderByInteractionsDesc(communityId, page, size);
         return ResponseEntity.ok(quizzFromCommunity);
     }
 
