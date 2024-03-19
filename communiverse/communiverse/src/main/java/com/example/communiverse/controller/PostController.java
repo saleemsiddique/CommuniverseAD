@@ -10,6 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -66,7 +69,7 @@ public class PostController {
         return ResponseEntity.ok(postsFromCommunity);
     }
 
-    @Operation(summary = "Obtiene todos los posts de una comunidad que tengan quizz paginados y ordenados por interacciones")
+    @Operation(summary = "Obtiene todos los quizz de una comunidad que tengan quizz paginados y ordenados por interacciones")
     @GetMapping("/community/{communityId}/quizz/{page}/{size}")
     public ResponseEntity<List<Post>> getAllQuizzFromCommunity(
             @PathVariable String communityId,
@@ -75,6 +78,21 @@ public class PostController {
         List<Post> quizzFromCommunity = postService.findAllWithQuizzOrderByInteractionsDesc(communityId, page, size);
         return ResponseEntity.ok(quizzFromCommunity);
     }
+
+    @GetMapping("/community/{communityId}/myspace/{followed}/{page}/{size}")
+    public ResponseEntity<List<Post>> getAllPostsFromCommunityMySpace(
+            @PathVariable String communityId,
+            @PathVariable String followed, // La lista de seguidos como una sola cadena
+            @PathVariable int page,
+            @PathVariable int size) throws UnsupportedEncodingException {
+
+        // Decodificar la lista de seguidos y dividirla en una lista de Strings
+        List<String> followedList = Arrays.asList(URLDecoder.decode(followed, "UTF-8").split(","));
+
+        List<Post> postsFromCommunity = postService.findPostsByCommunityAndFollowedUsers(communityId, followedList, page, size);
+        return ResponseEntity.ok(postsFromCommunity);
+    }
+
 
     @Operation(summary = "Creates a post")
     @PostMapping("")

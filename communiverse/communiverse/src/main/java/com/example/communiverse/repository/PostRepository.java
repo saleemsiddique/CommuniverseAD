@@ -27,4 +27,7 @@ public interface PostRepository extends MongoRepository<Post, String> {
     @Query(value = "{ 'community_id' : ?0, 'quizz.questions': { $exists: true, $not: { $size: 0 } } }, { $addFields: { 'totalInteractions': { $sum: ['$postInteractions.likes', '$postInteractions.reposts', { $size: '$postInteractions.comments_id' }] } } }, { $sort: { 'totalInteractions': -1 } }")
     Page<Post> findAllWithQuizzOrderByInteractionsDesc(String communityId, Pageable pageable);
 
+    @Query(value = "{ 'community_id' : ?0, 'author_id': { $in: ?1 } }")
+    Page<Post> findPostsByCommunityAndFollowedUsers(String communityId, List<String> followedUsersIds, Pageable pageable);
+
 }

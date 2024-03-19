@@ -73,6 +73,12 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
+    public List<Post> findPostsByCommunityAndFollowedUsers(String communityId, List<String> followedUsersIds, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return postRepository.findPostsByCommunityAndFollowedUsers(communityId, followedUsersIds, pageable).getContent();
+    }
+
+    @Override
     public Post addPost(Post post) {
         post.setId(IdGenerator.generateId());
         post.setDateTime(LocalDateTime.now());

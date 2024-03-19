@@ -24,5 +24,7 @@ public interface PostService {
 
     List<Post> findAllWithQuizzOrderByInteractionsDesc(String communityId, int page, int size);
 
+    List<Post> findPostsByCommunityAndFollowedUsers(String communityId, List<String> followedUsersIds, int page, int size);
+
     Post addPost(Post post);
 }
