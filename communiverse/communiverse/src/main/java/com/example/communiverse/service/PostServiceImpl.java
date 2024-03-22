@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,6 +49,8 @@ public class PostServiceImpl implements PostService{
         List<Post> result = new ArrayList<>();
         if (post != null && post.getPostInteractions() != null) {
             List<String> commentIds = post.getPostInteractions().getComments_id();
+            // Ensure comments are sorted by date (most recent first)
+            Collections.reverse(commentIds);
             int startIndex = page * size;
             int endIndex = Math.min(startIndex + size, commentIds.size());
             for (int i = startIndex; i < endIndex; i++) {
@@ -79,7 +82,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public Post addPost(Post post) {
+    public Post addPost(Post post, String parentPostId) {
         post.setId(IdGenerator.generateId());
         post.setDateTime(LocalDateTime.now());
 
@@ -105,6 +108,14 @@ public class PostServiceImpl implements PostService{
 
         if (!post.getQuizz().getQuestions().isEmpty()){
             post.getQuizz().setId(IdGenerator.generateId());
+        }
+
+        if (post.isComment() && parentPostId != null && !parentPostId.isEmpty()) {
+            Post parentPost = postRepository.findById(parentPostId).orElse(null);
+            if (parentPost != null) {
+                parentPost.addCommentId(post.getId());
+                postRepository.save(parentPost); // Guardar el post padre actualizado
+            }
         }
 
         return postRepository.save(post);

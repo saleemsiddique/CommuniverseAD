@@ -95,9 +95,13 @@ public class PostController {
 
 
     @Operation(summary = "Creates a post")
-    @PostMapping("")
-    public ResponseEntity<Post> addPost(@RequestBody Post post){
-        Post createdPost = postService.addPost(post);
+    @PostMapping("/{parentPostId}")
+    public ResponseEntity<Post> addPost(@RequestBody Post post, @PathVariable String parentPostId){
+        if (parentPostId.equalsIgnoreCase("none")) {
+            parentPostId = "";
+        }
+        Post createdPost = postService.addPost(post, parentPostId);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPost);
     }
+
 }

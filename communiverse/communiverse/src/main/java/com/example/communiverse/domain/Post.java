@@ -8,6 +8,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -40,4 +41,12 @@ public class Post {
     private LocalDateTime dateTime;
 
     private boolean isComment;
+
+    public void addCommentId(String commentId) {
+        if (this.postInteractions == null) {
+            this.postInteractions = new PostInteractions();
+            this.postInteractions.setComments_id(new ArrayList<>());
+        }
+        this.postInteractions.getComments_id().add(commentId);
+    }
 }

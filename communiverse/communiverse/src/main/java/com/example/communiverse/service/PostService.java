@@ -26,5 +26,5 @@ public interface PostService {
 
     List<Post> findPostsByCommunityAndFollowedUsers(String communityId, List<String> followedUsersIds, int page, int size);
 
-    Post addPost(Post post);
+    Post addPost(Post post, String parentPostId);
 }
