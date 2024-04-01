@@ -36,6 +36,8 @@ public class Post {
 
     private String repost_user_id;
 
+    private List<String> like_users_id;
+
     private Quizz quizz;
 
     private LocalDateTime dateTime;
