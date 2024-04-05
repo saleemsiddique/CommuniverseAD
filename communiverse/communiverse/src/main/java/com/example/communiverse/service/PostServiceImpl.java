@@ -121,4 +121,14 @@ public class PostServiceImpl implements PostService{
         return postRepository.save(post);
     }
 
+    @Override
+    public Post addLike(String id) {
+        return null;
+    }
+
+    @Override
+    public Post addRePost(Post post, String username) {
+        return null;
+    }
+
 }

@@ -104,4 +104,14 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPost);
     }
 
+    @Operation(summary = "Obtains Post by ID")
+    @GetMapping("/addLike/{idPost}/{userId}")
+    public ResponseEntity<Post> addLike(@PathVariable String idPost, @PathVariable String userId) {
+        Post post = postService.findById(idPost)
+                .orElseThrow(() -> new PostNotFoundException(idPost));
+        post.getpostInteractions().setlikes(post.getpostInteractions().getlikes++);
+        post.setlike_users_id(post.getlike_users_id.add(userId));
+        return ResponseEntity.ok(post);
+    }
+
 }

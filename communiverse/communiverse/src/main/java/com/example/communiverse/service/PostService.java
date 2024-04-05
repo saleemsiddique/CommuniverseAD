@@ -27,4 +27,8 @@ public interface PostService {
     List<Post> findPostsByCommunityAndFollowedUsers(String communityId, List<String> followedUsersIds, int page, int size);
 
     Post addPost(Post post, String parentPostId);
+
+    Post addLike(String id);
+
+    Post addRePost(Post post, String username);
 }
