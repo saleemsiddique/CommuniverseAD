@@ -122,8 +122,17 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public Post addLike(String id) {
-        return null;
+    public Post addLike(Post post, String userId) {
+        post.getPostInteractions().setLikes(post.getPostInteractions().getLikes() + 1);
+        post.getLike_users_id().add(userId);
+        return postRepository.save(post);
+    }
+
+    @Override
+    public Post lessLike(Post post, String userId) {
+        post.getPostInteractions().setLikes(post.getPostInteractions().getLikes() - 1);
+        post.getLike_users_id().remove(userId);
+        return postRepository.save(post);
     }
 
     @Override

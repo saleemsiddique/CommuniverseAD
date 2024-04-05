@@ -104,13 +104,21 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPost);
     }
 
-    @Operation(summary = "Obtains Post by ID")
+    @Operation(summary = "Adds like to post")
     @GetMapping("/addLike/{idPost}/{userId}")
     public ResponseEntity<Post> addLike(@PathVariable String idPost, @PathVariable String userId) {
         Post post = postService.findById(idPost)
                 .orElseThrow(() -> new PostNotFoundException(idPost));
-        post.getpostInteractions().setlikes(post.getpostInteractions().getlikes++);
-        post.setlike_users_id(post.getlike_users_id.add(userId));
+        postService.addLike(post, userId);
+        return ResponseEntity.ok(post);
+    }
+
+    @Operation(summary = "Subtracts like to post")
+    @GetMapping("/lessLike/{idPost}/{userId}")
+    public ResponseEntity<Post> lessLike(@PathVariable String idPost, @PathVariable String userId) {
+        Post post = postService.findById(idPost)
+                .orElseThrow(() -> new PostNotFoundException(idPost));
+        postService.lessLike(post, userId);
         return ResponseEntity.ok(post);
     }
 

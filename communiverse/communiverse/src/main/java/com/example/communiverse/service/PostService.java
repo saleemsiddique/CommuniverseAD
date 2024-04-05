@@ -28,7 +28,9 @@ public interface PostService {
 
     Post addPost(Post post, String parentPostId);
 
-    Post addLike(String id);
+    Post addLike(Post post, String userId);
+
+    Post lessLike(Post post, String userId);
 
     Post addRePost(Post post, String username);
 }
