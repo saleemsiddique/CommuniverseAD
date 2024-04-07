@@ -21,10 +21,10 @@ public interface PostRepository extends MongoRepository<Post, String> {
     @Query("{'id' : ?0}")
     Post findPostById(String postId);
 
-    @Query(value = "{ 'community_id' : ?0 }", sort = "{'postInteractions.likes' : -1, 'postInteractions.reposts' : -1, 'postInteractions.comments_id' : -1}")
+    @Query(value = "{ 'community_id' : ?0 }", sort = "{'postInteractions.likeUsersId' : -1, 'postInteractions.repostUsersId' : -1, 'postInteractions.commentsId' : -1}")
     Page<Post> findAllByCommunityIdOrderByInteractionsDesc(String communityId, Pageable pageable);
 
-    @Query(value = "{ 'community_id' : ?0, 'quizz.questions': { $exists: true, $not: { $size: 0 } } }", sort = "{'postInteractions.likes' : -1, 'postInteractions.reposts' : -1, 'postInteractions.comments_id' : -1}")
+    @Query(value = "{ 'community_id' : ?0, 'quizz.questions': { $exists: true, $not: { $size: 0 } } }", sort = "{'postInteractions.likeUsersId' : -1, 'postInteractions.repostUsersId' : -1, 'postInteractions.commentsId' : -1}")
     Page<Post> findAllWithQuizzOrderByInteractionsDesc(String communityId, Pageable pageable);
 
     @Query(value = "{ 'community_id' : ?0, 'author_id': { $in: ?1 } }", sort = "{'dateTime' : -1}")

@@ -30,7 +30,10 @@ public interface PostService {
 
     Post addLike(Post post, String userId);
 
-    Post lessLike(Post post, String userId);
+    Post removeLike(Post post, String userId);
 
-    Post addRePost(Post post, String username);
+    Post addRepost(Post post, String userId);
+
+    Post removeRepost(Post post, String userId);
+
 }

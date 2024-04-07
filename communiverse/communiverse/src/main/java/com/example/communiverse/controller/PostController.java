@@ -104,22 +104,25 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPost);
     }
 
-    @Operation(summary = "Adds like to post")
-    @GetMapping("/addLike/{idPost}/{userId}")
-    public ResponseEntity<Post> addLike(@PathVariable String idPost, @PathVariable String userId) {
+    @Operation(summary = "Add like or repost to post")
+    @GetMapping("/{action}/{idPost}/{userId}")
+    public ResponseEntity<Post> likeOrRepost(@PathVariable String action, @PathVariable String idPost, @PathVariable String userId) {
         Post post = postService.findById(idPost)
                 .orElseThrow(() -> new PostNotFoundException(idPost));
-        postService.addLike(post, userId);
+
+        if ("addLike".equals(action)) {
+            postService.addLike(post, userId);
+        } else if ("removeLike".equals(action)) {
+            postService.removeLike(post, userId);
+        } else if ("addRepost".equals(action)) {
+            postService.addRepost(post, userId);
+        } else if ("removeRepost".equals(action)) {
+            postService.removeRepost(post, userId);
+        } else {
+            // Manejar caso de acción desconocida
+            return ResponseEntity.badRequest().build();
+        }
+
         return ResponseEntity.ok(post);
     }
-
-    @Operation(summary = "Subtracts like to post")
-    @GetMapping("/lessLike/{idPost}/{userId}")
-    public ResponseEntity<Post> lessLike(@PathVariable String idPost, @PathVariable String userId) {
-        Post post = postService.findById(idPost)
-                .orElseThrow(() -> new PostNotFoundException(idPost));
-        postService.lessLike(post, userId);
-        return ResponseEntity.ok(post);
-    }
-
 }

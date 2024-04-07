@@ -4,12 +4,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostInteractions {
-    private int likes;
-    private int reposts;
+    private List<String> like_users_id;
+    private List<String> repost_users_id;
     private ArrayList<String> comments_id;
 }

@@ -40,6 +40,7 @@ public class PostServiceImpl implements PostService{
     public List<Post> findAllByRepostUserIdPaged(String repostUserId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Post> postPage = postRepository.findAllByRepostUserIdPaged(repostUserId, pageable);
+        System.out.println(postPage);
         return postPage.getContent();
     }
 
@@ -123,21 +124,26 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public Post addLike(Post post, String userId) {
-        post.getPostInteractions().setLikes(post.getPostInteractions().getLikes() + 1);
-        post.getLike_users_id().add(userId);
+        post.getPostInteractions().getLike_users_id().add(userId);
         return postRepository.save(post);
     }
 
     @Override
-    public Post lessLike(Post post, String userId) {
-        post.getPostInteractions().setLikes(post.getPostInteractions().getLikes() - 1);
-        post.getLike_users_id().remove(userId);
+    public Post removeLike(Post post, String userId) {
+        post.getPostInteractions().getLike_users_id().remove(userId);
         return postRepository.save(post);
     }
 
     @Override
-    public Post addRePost(Post post, String username) {
-        return null;
+    public Post addRepost(Post post, String userId) {
+        post.getPostInteractions().getRepost_users_id().add(userId);
+        post.setRepost_user_id(userId);
+        return addPost(post, "none");
     }
 
+    @Override
+    public Post removeRepost(Post post, String userId) {
+        post.getPostInteractions().getRepost_users_id().remove(userId);
+        return postRepository.save(post);
+    }
 }
