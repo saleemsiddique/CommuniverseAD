@@ -34,8 +34,6 @@ public class Post {
 
     private PostInteractions postInteractions;
 
-    private String repost_user_id;
-
     private Quizz quizz;
 
     private LocalDateTime dateTime;

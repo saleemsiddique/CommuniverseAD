@@ -137,8 +137,7 @@ public class PostServiceImpl implements PostService{
     @Override
     public Post addRepost(Post post, String userId) {
         post.getPostInteractions().getRepost_users_id().add(userId);
-        post.setRepost_user_id(userId);
-        return addPost(post, "none");
+        return postRepository.save(post);
     }
 
     @Override
