@@ -20,9 +20,17 @@ public class UserController {
 
     @Operation(summary = "Obtains User by ID")
     @GetMapping("/{id}")
-    public ResponseEntity<User> getTop5CommunitiesByFollowers(@PathVariable String id) {
+    public ResponseEntity<User> getUserById(@PathVariable String id) {
         User user = userService.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
+        return ResponseEntity.ok(user);
+    }
+
+    @Operation(summary = "Obtains User by Username")
+    @GetMapping("/{username}")
+    public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
+        User user = userService.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException(username));
         return ResponseEntity.ok(user);
     }
 }
