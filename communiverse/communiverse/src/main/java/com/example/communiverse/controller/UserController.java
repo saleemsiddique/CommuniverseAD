@@ -1,5 +1,6 @@
 package com.example.communiverse.controller;
 
+import com.example.communiverse.domain.Post;
 import com.example.communiverse.domain.User;
 import com.example.communiverse.exception.UserNotFoundException;
 import com.example.communiverse.service.UserService;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/user")
@@ -27,10 +30,18 @@ public class UserController {
     }
 
     @Operation(summary = "Obtains User by Username")
-    @GetMapping("/{username}")
+    @GetMapping("username/{username}")
     public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
         User user = userService.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException(username));
         return ResponseEntity.ok(user);
+    }
+
+    @Operation(summary = "Obtains User by Username")
+    @GetMapping("usernameRegex/{username}")
+    public ResponseEntity<List<User>> getCommentsByPostId(
+            @PathVariable String username) {
+        List<User> searchedUsers = userService.findByUsernameRegex(username);
+        return ResponseEntity.ok(searchedUsers);
     }
 }

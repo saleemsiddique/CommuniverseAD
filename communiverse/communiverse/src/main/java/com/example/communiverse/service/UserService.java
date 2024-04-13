@@ -18,4 +18,6 @@ public interface UserService {
 
     Optional<User> findByUsername(String username);
 
+    List<User> findByUsernameRegex(String usernamePattern);
+
 }
