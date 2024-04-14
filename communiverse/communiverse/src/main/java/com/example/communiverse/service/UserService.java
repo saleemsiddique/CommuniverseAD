@@ -20,4 +20,6 @@ public interface UserService {
 
     List<User> findByUsernameRegex(String usernamePattern);
 
+    User follow(User followingUser, User followedUser);
+
 }

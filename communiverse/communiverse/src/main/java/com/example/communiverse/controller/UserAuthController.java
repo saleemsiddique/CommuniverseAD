@@ -154,7 +154,7 @@ public class UserAuthController {
         User user = optionalUser.get();
 
         // Actualiza los campos del cliente con los valores proporcionados en la solicitud
-        user.setName(userModifyRequest.getFirstName());
+        user.setName(userModifyRequest.getName());
         user.setLastName(userModifyRequest.getLastName());
         user.setBiography(userModifyRequest.getBiography());
         user.setUsername(userModifyRequest.getUsername());

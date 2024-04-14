@@ -52,4 +52,20 @@ public class UserServiceImpl implements UserService{
     public List<User> findByUsernameRegex(String usernamePattern) {
         return userRepository.findByUsernameRegex(usernamePattern);
     }
+
+    @Override
+    public User follow(User followingUser, User followedUser) {
+        if (followingUser.getFollowed_id().contains(followedUser.getId()) && followedUser.getFollowers_id().contains(followingUser.getId())) {
+            // Si ya se siguen
+            followingUser.getFollowed_id().remove(followedUser.getId());
+            followedUser.getFollowers_id().remove(followingUser.getId());
+        } else {
+            // Si no se siguen
+            followingUser.getFollowed_id().add(followedUser.getId());
+            followedUser.getFollowers_id().add(followingUser.getId());
+        }
+        userRepository.save(followingUser);
+        return userRepository.save(followedUser);
+    }
+
 }

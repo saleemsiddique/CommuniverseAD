@@ -2,6 +2,7 @@ package com.example.communiverse.controller;
 
 import com.example.communiverse.domain.Post;
 import com.example.communiverse.domain.User;
+import com.example.communiverse.exception.PostNotFoundException;
 import com.example.communiverse.exception.UserNotFoundException;
 import com.example.communiverse.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,5 +44,19 @@ public class UserController {
             @PathVariable String username) {
         List<User> searchedUsers = userService.findByUsernameRegex(username);
         return ResponseEntity.ok(searchedUsers);
+    }
+
+    @Operation(summary = "following system")
+    @GetMapping("/follow/{idFollowing}/{idFollowed}")
+    public ResponseEntity<User> follow(@PathVariable String idFollowing, @PathVariable String idFollowed) {
+        User followingUser = userService.findById(idFollowing)
+                .orElseThrow(() -> new PostNotFoundException(idFollowing));
+
+        User followedUser = userService.findById(idFollowed)
+                .orElseThrow(() -> new PostNotFoundException(idFollowed));
+
+        userService.follow(followingUser, followedUser);
+
+        return ResponseEntity.ok(followedUser);
     }
 }
