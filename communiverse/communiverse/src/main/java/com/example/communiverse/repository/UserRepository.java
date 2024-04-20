@@ -17,4 +17,5 @@ public interface UserRepository extends MongoRepository<User, String> {
 
     List<User> findByUsernameRegex(String usernamePattern);
 
+    List<User> findByMemberCommunitiesContainingOrModeratedCommunitiesContaining(String communityId, String communityId2);
 }

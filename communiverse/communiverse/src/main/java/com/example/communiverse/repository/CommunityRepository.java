@@ -15,4 +15,6 @@ public interface CommunityRepository extends MongoRepository<Community, String> 
     List<Community> findAllByIdIn(List<String> ids);
 
     List<Community> findTop5ByOrderByFollowersDesc();
+
+    void deleteCommunityById(String id);
 }

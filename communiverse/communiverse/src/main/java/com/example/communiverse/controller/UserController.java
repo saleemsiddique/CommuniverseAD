@@ -1,17 +1,17 @@
 package com.example.communiverse.controller;
 
+import com.example.communiverse.domain.Community;
 import com.example.communiverse.domain.Post;
 import com.example.communiverse.domain.User;
+import com.example.communiverse.exception.CommunityNotFoundException;
 import com.example.communiverse.exception.PostNotFoundException;
 import com.example.communiverse.exception.UserNotFoundException;
+import com.example.communiverse.service.CommunityService;
 import com.example.communiverse.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,6 +21,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private CommunityService communityService;
 
     @Operation(summary = "Obtains User by ID")
     @GetMapping("/{id}")
@@ -58,5 +61,39 @@ public class UserController {
         userService.follow(followingUser, followedUser);
 
         return ResponseEntity.ok(followedUser);
+    }
+
+    @Operation(summary = "Join community")
+    @GetMapping("/join/{idCommunity}/{idUser}")
+    public ResponseEntity<User> getTop5CommunitiesByFollowers(@PathVariable String idCommunity, @PathVariable String idUser) {
+        Community community = communityService.findById(idCommunity)
+                .orElseThrow(() -> new CommunityNotFoundException(idCommunity));
+        User user = userService.findById(idUser)
+                .orElseThrow(() -> new UserNotFoundException(idUser));
+        user = userService.joinCommunity(community, user);
+        return ResponseEntity.ok(user);
+    }
+
+    @GetMapping("/community/{communityId}/members")
+    public List<User> getCommunityMembers(@PathVariable String communityId) {
+        return userService.findByMemberCommunitiesContaining(communityId);
+    }
+
+    @DeleteMapping("/{userId}/community/{communityId}")
+    public ResponseEntity<User> removeUserFromCommunity(@PathVariable String userId, @PathVariable String communityId) {
+        User user = userService.removeUserFromCommunity(userId, communityId);
+        return ResponseEntity.ok(user);
+    }
+
+    @GetMapping("/{userId}/community/{communityId}/promote")
+    public ResponseEntity<User> promoteToModerator(@PathVariable String userId, @PathVariable String communityId) {
+        User user = userService.promoteToModerator(userId, communityId);
+        return ResponseEntity.ok(user);
+    }
+
+    @GetMapping("/{userId}/community/{communityId}/demote")
+    public ResponseEntity<User> demoteToMember(@PathVariable String userId, @PathVariable String communityId) {
+        User user = userService.demoteToMember(userId, communityId);
+        return ResponseEntity.ok(user);
     }
 }

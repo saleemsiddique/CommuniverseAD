@@ -12,4 +12,6 @@ public interface CommunityService {
 
     public List<Community> getMyCommunities(List<String> communityIds);
     Community createCommunity(Community community);
+
+    void deleteCommunity(String communityId);
 }

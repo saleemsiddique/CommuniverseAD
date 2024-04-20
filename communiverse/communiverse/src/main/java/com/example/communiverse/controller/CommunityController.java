@@ -58,4 +58,10 @@ public class CommunityController {
         Community createdCommunity = communityService.createCommunity(community);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCommunity);
     }
+
+    @DeleteMapping("/{communityId}")
+    public ResponseEntity<String> deleteCommunity(@PathVariable String communityId) {
+        communityService.deleteCommunity(communityId);
+        return ResponseEntity.ok("Community deleted successfully");
+    }
 }

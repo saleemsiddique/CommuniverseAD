@@ -1,6 +1,8 @@
 package com.example.communiverse.service;
 
+import com.example.communiverse.domain.Community;
 import com.example.communiverse.domain.User;
+import com.example.communiverse.repository.CommunityRepository;
 import com.example.communiverse.repository.UserRepository;
 import com.example.communiverse.utils.IdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,9 @@ public class UserServiceImpl implements UserService{
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private CommunityRepository communityRepository;
 
     @Override
     public User addUser(User user) {
@@ -66,6 +71,60 @@ public class UserServiceImpl implements UserService{
         }
         userRepository.save(followingUser);
         return userRepository.save(followedUser);
+    }
+
+
+    @Override
+    public User joinCommunity(Community community, User user) {
+        if (user.getMemberCommunities().contains(community.getId())) {
+            user.getMemberCommunities().remove(community.getId());
+            community.setFollowers(community.getFollowers() - 1);
+        } else {
+            user.getMemberCommunities().add(community.getId());
+            community.setFollowers(community.getFollowers() + 1);
+        }
+        communityRepository.save(community);
+        return userRepository.save(user);
+    }
+
+    @Override
+    public List<User> findByMemberCommunitiesContaining(String communityId) {
+        return userRepository.findByMemberCommunitiesContainingOrModeratedCommunitiesContaining(communityId, communityId);
+    }
+    @Override
+    public User removeUserFromCommunity(String userId, String communityId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+        if (user.getCreatedCommunities().remove(communityId) || user.getModeratedCommunities().remove(communityId) || user.getMemberCommunities().remove(communityId)) {
+            return userRepository.save(user);
+        } else {
+            throw new IllegalArgumentException("Usuario no encontrado en la comunidad");
+        }
+    }
+    @Override
+    public User promoteToModerator(String userId, String communityId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+        if (user.getMemberCommunities().contains(communityId)) {
+            user.getMemberCommunities().remove(communityId);
+            user.getModeratedCommunities().add(communityId);
+            return userRepository.save(user);
+        } else {
+            throw new IllegalArgumentException("Usuario no es miembro de la comunidad");
+        }
+    }
+    @Override
+    public User demoteToMember(String userId, String communityId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+        if (user.getModeratedCommunities().contains(communityId)) {
+            user.getModeratedCommunities().remove(communityId);
+            user.getMemberCommunities().add(communityId);
+            return userRepository.save(user);
+        } else {
+            throw new IllegalArgumentException("Usuario no es moderador de la comunidad");
+        }
     }
 
 }

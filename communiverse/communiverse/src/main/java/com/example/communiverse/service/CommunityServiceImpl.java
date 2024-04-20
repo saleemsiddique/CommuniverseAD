@@ -44,4 +44,8 @@ public class CommunityServiceImpl implements CommunityService{
         }
         return communityRepository.save(community);
     }
+    @Override
+    public void deleteCommunity(String communityId) {
+        communityRepository.deleteCommunityById(communityId);
+    }
 }
