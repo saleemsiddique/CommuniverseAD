@@ -1,7 +1,9 @@
 package com.example.communiverse.service;
 
 import com.example.communiverse.domain.Community;
+import com.example.communiverse.domain.User;
 import com.example.communiverse.repository.CommunityRepository;
+import com.example.communiverse.repository.UserRepository;
 import com.example.communiverse.utils.IdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,9 @@ public class CommunityServiceImpl implements CommunityService{
 
     @Autowired
     private CommunityRepository communityRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private BlobStorageService blobStorageService;
@@ -45,7 +50,10 @@ public class CommunityServiceImpl implements CommunityService{
         return communityRepository.save(community);
     }
     @Override
-    public void deleteCommunity(String communityId) {
-        communityRepository.deleteCommunityById(communityId);
+    public User deleteCommunity(Community community) {
+        User user = userRepository.findById(community.getUserCreator_id()).orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+        user.getCreatedCommunities().remove(community.getId());
+        communityRepository.deleteCommunityById(community.getId());
+        return userRepository.save(user);
     }
 }

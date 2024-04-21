@@ -2,6 +2,7 @@ package com.example.communiverse.repository;
 
 import com.example.communiverse.domain.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,5 +18,6 @@ public interface UserRepository extends MongoRepository<User, String> {
 
     List<User> findByUsernameRegex(String usernamePattern);
 
-    List<User> findByMemberCommunitiesContainingOrModeratedCommunitiesContaining(String communityId, String communityId2);
+    List<User> findByMemberCommunitiesContainingOrModeratedCommunitiesContainingOrCreatedCommunitiesContaining(String communityId, String communityId2, String communityId3);
+
 }

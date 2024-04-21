@@ -76,8 +76,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User joinCommunity(Community community, User user) {
-        if (user.getMemberCommunities().contains(community.getId())) {
-            user.getMemberCommunities().remove(community.getId());
+        if (user.getCreatedCommunities().remove(community.getId()) || user.getModeratedCommunities().remove(community.getId()) || user.getMemberCommunities().remove(community.getId())) {
             community.setFollowers(community.getFollowers() - 1);
         } else {
             user.getMemberCommunities().add(community.getId());
@@ -89,39 +88,60 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public List<User> findByMemberCommunitiesContaining(String communityId) {
-        return userRepository.findByMemberCommunitiesContainingOrModeratedCommunitiesContaining(communityId, communityId);
+        return userRepository.findByMemberCommunitiesContainingOrModeratedCommunitiesContainingOrCreatedCommunitiesContaining(communityId, communityId, communityId);
     }
     @Override
-    public User removeUserFromCommunity(String userId, String communityId) {
+    public List<User> removeUserFromCommunity(String userId, String communityId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+        Community community = communityRepository.findById(communityId).orElseThrow(() -> new IllegalArgumentException("Comunidad no encontrado"));
         if (user.getCreatedCommunities().remove(communityId) || user.getModeratedCommunities().remove(communityId) || user.getMemberCommunities().remove(communityId)) {
-            return userRepository.save(user);
+            community.setFollowers(community.getFollowers() - 1);
+            userRepository.save(user);
+            communityRepository.save(community);
+            return findByMemberCommunitiesContaining(communityId);
         } else {
             throw new IllegalArgumentException("Usuario no encontrado en la comunidad");
         }
     }
+
     @Override
-    public User promoteToModerator(String userId, String communityId) {
+    public List<User> promote(String userId, String communityId, String idCreator) {
         User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+        Community community = communityRepository.findById(communityId).orElseThrow(() -> new IllegalArgumentException("Comunidad no encontrado"));
+
+        User creatorUser = userRepository.findById(idCreator)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
         if (user.getMemberCommunities().contains(communityId)) {
             user.getMemberCommunities().remove(communityId);
             user.getModeratedCommunities().add(communityId);
-            return userRepository.save(user);
-        } else {
+            userRepository.save(user);
+            return findByMemberCommunitiesContaining(communityId);
+        } else if (user.getModeratedCommunities().contains(communityId)) {
+            user.getModeratedCommunities().remove(communityId);
+            user.getCreatedCommunities().add(communityId);
+            creatorUser.getCreatedCommunities().remove(communityId);
+            creatorUser.getModeratedCommunities().add(communityId);
+            userRepository.save(creatorUser);
+            userRepository.save(user);
+            return findByMemberCommunitiesContaining(communityId);
+        }
+        else {
             throw new IllegalArgumentException("Usuario no es miembro de la comunidad");
         }
     }
     @Override
-    public User demoteToMember(String userId, String communityId) {
+    public List<User> demoteToMember(String userId, String communityId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
         if (user.getModeratedCommunities().contains(communityId)) {
             user.getModeratedCommunities().remove(communityId);
             user.getMemberCommunities().add(communityId);
-            return userRepository.save(user);
+            userRepository.save(user);
+            return findByMemberCommunitiesContaining(communityId);
         } else {
             throw new IllegalArgumentException("Usuario no es moderador de la comunidad");
         }

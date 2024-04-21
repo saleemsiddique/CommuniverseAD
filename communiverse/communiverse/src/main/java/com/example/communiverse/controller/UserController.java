@@ -80,20 +80,17 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}/community/{communityId}")
-    public ResponseEntity<User> removeUserFromCommunity(@PathVariable String userId, @PathVariable String communityId) {
-        User user = userService.removeUserFromCommunity(userId, communityId);
-        return ResponseEntity.ok(user);
+    public List<User> removeUserFromCommunity(@PathVariable String userId, @PathVariable String communityId) {
+        return userService.removeUserFromCommunity(userId, communityId);
     }
 
-    @GetMapping("/{userId}/community/{communityId}/promote")
-    public ResponseEntity<User> promoteToModerator(@PathVariable String userId, @PathVariable String communityId) {
-        User user = userService.promoteToModerator(userId, communityId);
-        return ResponseEntity.ok(user);
+    @GetMapping("{idCreator}/{userId}/community/{communityId}/promote")
+    public List<User> promoteToModerator(@PathVariable String idCreator, @PathVariable String userId, @PathVariable String communityId) {
+        return userService.promote(userId, communityId, idCreator);
     }
 
     @GetMapping("/{userId}/community/{communityId}/demote")
-    public ResponseEntity<User> demoteToMember(@PathVariable String userId, @PathVariable String communityId) {
-        User user = userService.demoteToMember(userId, communityId);
-        return ResponseEntity.ok(user);
+    public List<User> demoteToMember(@PathVariable String userId, @PathVariable String communityId) {
+        return userService.demoteToMember(userId, communityId);
     }
 }

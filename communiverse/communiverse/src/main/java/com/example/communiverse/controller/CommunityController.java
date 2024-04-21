@@ -60,8 +60,10 @@ public class CommunityController {
     }
 
     @DeleteMapping("/{communityId}")
-    public ResponseEntity<String> deleteCommunity(@PathVariable String communityId) {
-        communityService.deleteCommunity(communityId);
-        return ResponseEntity.ok("Community deleted successfully");
+    public ResponseEntity<User> deleteCommunity(@PathVariable String communityId) {
+        Community community = communityService.findById(communityId)
+                .orElseThrow(() -> new CommunityNotFoundException(communityId));
+        User user = communityService.deleteCommunity(community);
+        return ResponseEntity.ok(user);
     }
 }
