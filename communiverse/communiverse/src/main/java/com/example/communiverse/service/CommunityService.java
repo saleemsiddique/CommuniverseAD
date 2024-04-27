@@ -14,5 +14,7 @@ public interface CommunityService {
     public List<Community> getMyCommunities(List<String> communityIds);
     Community createCommunity(Community community);
 
+    Community updateCommunity(String id, Community community);
+
     User deleteCommunity(Community community);
 }

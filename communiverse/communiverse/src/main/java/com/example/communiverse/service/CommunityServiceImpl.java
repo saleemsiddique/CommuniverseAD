@@ -2,6 +2,7 @@ package com.example.communiverse.service;
 
 import com.example.communiverse.domain.Community;
 import com.example.communiverse.domain.User;
+import com.example.communiverse.exception.CommunityNotFoundException;
 import com.example.communiverse.repository.CommunityRepository;
 import com.example.communiverse.repository.UserRepository;
 import com.example.communiverse.utils.IdGenerator;
@@ -55,5 +56,28 @@ public class CommunityServiceImpl implements CommunityService{
         user.getCreatedCommunities().remove(community.getId());
         communityRepository.deleteCommunityById(community.getId());
         return userRepository.save(user);
+    }
+    @Override
+    public Community updateCommunity(String id, Community newCommunity) {
+        Community community = communityRepository.findById(id).orElseThrow();
+        if(!newCommunity.getPhoto().equalsIgnoreCase("")) {
+            String photoUrl = blobStorageService.uploadPhoto(newCommunity.getPhoto(), IdGenerator.generateId() + "-community_" + newCommunity.getId() + "-image.jpg");
+            newCommunity.setPhoto(photoUrl);
+        }
+        newCommunity.setId(community.getId());
+        newCommunity.setFollowers(community.getFollowers());
+        newCommunity.setUserCreator_id(community.getUserCreator_id());
+        newCommunity.setPosts_id(community.getPosts_id());
+        if (newCommunity.getDescription().equalsIgnoreCase("")){
+            newCommunity.setDescription(community.getDescription());
+        }
+        if (newCommunity.getName().equalsIgnoreCase("")){
+            newCommunity.setName(community.getName());
+        }
+        if (newCommunity.getPhoto().equalsIgnoreCase("")){
+            newCommunity.setPhoto(community.getPhoto());
+        }
+        System.out.println(newCommunity);
+        return communityRepository.save(newCommunity);
     }
 }

@@ -59,6 +59,13 @@ public class CommunityController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCommunity);
     }
 
+    @Operation(summary = "Edit community")
+    @PutMapping("/{id}")
+    public ResponseEntity<Community> editCommunity(@PathVariable String id, @RequestBody Community community) {
+        Community modifiedCommunity = communityService.updateCommunity(id, community);
+        return new ResponseEntity<>(modifiedCommunity, HttpStatus.OK);
+    }
+
     @DeleteMapping("/{communityId}")
     public ResponseEntity<User> deleteCommunity(@PathVariable String communityId) {
         Community community = communityService.findById(communityId)
