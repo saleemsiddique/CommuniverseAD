@@ -79,9 +79,9 @@ public class UserController {
         return userService.findByMemberCommunitiesContaining(communityId);
     }
 
-    @DeleteMapping("/{userId}/community/{communityId}")
-    public List<User> removeUserFromCommunity(@PathVariable String userId, @PathVariable String communityId) {
-        return userService.removeUserFromCommunity(userId, communityId);
+    @DeleteMapping("/{userId}/community/{communityId}/{until}")
+    public List<User> removeUserFromCommunity(@PathVariable String userId, @PathVariable String communityId, @PathVariable int until) {
+        return userService.removeUserFromCommunity(userId, communityId, until);
     }
 
     @GetMapping("{idCreator}/{userId}/community/{communityId}/promote")

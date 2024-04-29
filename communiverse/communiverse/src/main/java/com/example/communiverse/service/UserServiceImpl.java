@@ -8,6 +8,7 @@ import com.example.communiverse.utils.IdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -76,26 +77,50 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User joinCommunity(Community community, User user) {
-        if (user.getCreatedCommunities().remove(community.getId()) || user.getModeratedCommunities().remove(community.getId()) || user.getMemberCommunities().remove(community.getId())) {
+        // Verificar si el usuario ya está en la comunidad como creador, moderador o miembro
+        if (user.getCreatedCommunities().remove(community.getId()) ||
+                user.getModeratedCommunities().remove(community.getId()) ||
+                user.getMemberCommunities().remove(community.getId())) {
             community.setFollowers(community.getFollowers() - 1);
         } else {
+            // Verificar si el usuario está en la lista de usuarios prohibidos
+            if (isUserBanned(community, user)) {
+                // Permitir unirse a la comunidad si la prohibición ha caducado
+                if (isBanExpired(community, user)) {
+                    removeBannedUser(community, user); // Eliminar usuario prohibido
+                    // Recuperar la instancia actualizada de Community
+                    community = communityRepository.findById(community.getId()).orElseThrow(() -> new RuntimeException("Comunidad no encontrada"));
+                } else {
+                    throw new RuntimeException("El usuario está prohibido en esta comunidad.");
+                }
+            }
             user.getMemberCommunities().add(community.getId());
             community.setFollowers(community.getFollowers() + 1);
         }
+
+        // Guardar los cambios en la comunidad y en el usuario
         communityRepository.save(community);
         return userRepository.save(user);
     }
+
 
     @Override
     public List<User> findByMemberCommunitiesContaining(String communityId) {
         return userRepository.findByMemberCommunitiesContainingOrModeratedCommunitiesContainingOrCreatedCommunitiesContaining(communityId, communityId, communityId);
     }
+
     @Override
-    public List<User> removeUserFromCommunity(String userId, String communityId) {
+    public List<User> removeUserFromCommunity(String userId, String communityId, int daysUntilBan) {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
         Community community = communityRepository.findById(communityId).orElseThrow(() -> new IllegalArgumentException("Comunidad no encontrado"));
         if (user.getCreatedCommunities().remove(communityId) || user.getModeratedCommunities().remove(communityId) || user.getMemberCommunities().remove(communityId)) {
             community.setFollowers(community.getFollowers() - 1);
+            LocalDate untilDate = LocalDate.now().plusDays(daysUntilBan);
+            Community.BannedUser bannedUser = new Community.BannedUser(userId, untilDate);
+            if (community.getBanned() == null) {
+                community.setBanned(new ArrayList<>());
+            }
+            community.getBanned().add(bannedUser);
             userRepository.save(user);
             communityRepository.save(community);
             return findByMemberCommunitiesContaining(communityId);
@@ -144,6 +169,53 @@ public class UserServiceImpl implements UserService{
             return findByMemberCommunitiesContaining(communityId);
         } else {
             throw new IllegalArgumentException("Usuario no es moderador de la comunidad");
+        }
+    }
+
+    // Método para verificar si el usuario está en la lista de usuarios prohibidos
+    private boolean isUserBanned(Community community, User user) {
+        List<Community.BannedUser> bannedUsers = community.getBanned();
+        if (bannedUsers != null) {
+            for (Community.BannedUser bannedUser : bannedUsers) {
+                if (bannedUser.getUser_id().equals(user.getId())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    // Método para verificar si la prohibición ha caducado
+    private boolean isBanExpired(Community community, User user) {
+        List<Community.BannedUser> bannedUsers = community.getBanned();
+        if (bannedUsers != null) {
+            for (Iterator<Community.BannedUser> iterator = bannedUsers.iterator(); iterator.hasNext(); ) {
+                Community.BannedUser bannedUser = iterator.next();
+                if (bannedUser.getUser_id().equals(user.getId())) {
+                    // Obtener la fecha de caducidad de la prohibición
+                    LocalDate untilDate = bannedUser.getUntil();
+                    // Comparar con la fecha actual
+                    LocalDate currentDate = LocalDate.now();
+                    return currentDate.isAfter(untilDate);
+                }
+            }
+        }
+        return true; // Si no se encuentra el usuario en la lista, se considera que la prohibición ha caducado
+    }
+
+    // Método para eliminar un usuario prohibido de la lista
+    private void removeBannedUser(Community community, User user) {
+        List<Community.BannedUser> bannedUsers = community.getBanned();
+        if (bannedUsers != null) {
+            for (Iterator<Community.BannedUser> iterator = bannedUsers.iterator(); iterator.hasNext(); ) {
+                Community.BannedUser bannedUser = iterator.next();
+                if (bannedUser.getUser_id().equals(user.getId())) {
+                    iterator.remove();
+                    break;
+                }
+            }
+            community.setBanned(bannedUsers); // Actualizar la lista de usuarios prohibidos en la comunidad
+            communityRepository.save(community); // Guardar la comunidad actualizada en la base de datos
         }
     }
 

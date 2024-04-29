@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -21,17 +22,12 @@ public class Community {
     @Size(max = 30)
     private String name;
 
-    @NotBlank
     private String userCreator_id;
 
     @NotBlank
     @Size(max = 200)
     private String description;
 
-    @NotBlank
-    private EPrivacy privacy;
-
-    @NotBlank
     private String photo;
 
     @NotNull
@@ -39,4 +35,14 @@ public class Community {
 
     @NotNull
     private List<String> posts_id;
+
+    private List<BannedUser> banned;
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class BannedUser {
+        private String user_id;
+        private LocalDate until;
+    }
 }

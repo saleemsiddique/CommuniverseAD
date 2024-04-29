@@ -27,7 +27,7 @@ public interface UserService {
 
     List<User> findByMemberCommunitiesContaining(String communityId);
 
-    List<User> removeUserFromCommunity(String userId, String communityId);
+    List<User> removeUserFromCommunity(String userId, String communityId, int daysUntilBan);
     List<User> promote(String userId, String communityId, String idCreator);
     List<User> demoteToMember(String userId, String communityId);
 }
