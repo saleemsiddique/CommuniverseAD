@@ -8,6 +8,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -43,6 +44,6 @@ public class Community {
     @AllArgsConstructor
     public static class BannedUser {
         private String user_id;
-        private LocalDate until;
+        private LocalDateTime until;
     }
 }

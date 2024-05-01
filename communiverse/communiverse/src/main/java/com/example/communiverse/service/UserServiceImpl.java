@@ -9,10 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService{
@@ -109,14 +108,18 @@ public class UserServiceImpl implements UserService{
         return userRepository.findByMemberCommunitiesContainingOrModeratedCommunitiesContainingOrCreatedCommunitiesContaining(communityId, communityId, communityId);
     }
 
-    @Override
     public List<User> removeUserFromCommunity(String userId, String communityId, int daysUntilBan) {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
-        Community community = communityRepository.findById(communityId).orElseThrow(() -> new IllegalArgumentException("Comunidad no encontrado"));
+        Community community = communityRepository.findById(communityId).orElseThrow(() -> new IllegalArgumentException("Comunidad no encontrada"));
         if (user.getCreatedCommunities().remove(communityId) || user.getModeratedCommunities().remove(communityId) || user.getMemberCommunities().remove(communityId)) {
             community.setFollowers(community.getFollowers() - 1);
-            LocalDate untilDate = LocalDate.now().plusDays(daysUntilBan);
-            Community.BannedUser bannedUser = new Community.BannedUser(userId, untilDate);
+            // Obtener la fecha actual
+            LocalDate currentDate = LocalDate.now();
+            // Obtener la hora actual
+            LocalTime currentTime = LocalTime.now();
+            // Crear la fecha y hora exactas 24 horas después
+            LocalDateTime untilDateTime = LocalDateTime.of(currentDate, currentTime).plusDays(daysUntilBan);
+            Community.BannedUser bannedUser = new Community.BannedUser(userId, untilDateTime);
             if (community.getBanned() == null) {
                 community.setBanned(new ArrayList<>());
             }
@@ -189,19 +192,21 @@ public class UserServiceImpl implements UserService{
     private boolean isBanExpired(Community community, User user) {
         List<Community.BannedUser> bannedUsers = community.getBanned();
         if (bannedUsers != null) {
-            for (Iterator<Community.BannedUser> iterator = bannedUsers.iterator(); iterator.hasNext(); ) {
-                Community.BannedUser bannedUser = iterator.next();
+            for (Community.BannedUser bannedUser : bannedUsers) {
                 if (bannedUser.getUser_id().equals(user.getId())) {
                     // Obtener la fecha de caducidad de la prohibición
-                    LocalDate untilDate = bannedUser.getUntil();
-                    // Comparar con la fecha actual
-                    LocalDate currentDate = LocalDate.now();
-                    return currentDate.isAfter(untilDate);
+                    LocalDateTime untilDate = bannedUser.getUntil();
+                    // Obtener la fecha y hora actuales
+                    LocalDateTime currentDateTime = LocalDateTime.now();
+                    // Comprobar si la fecha y hora actuales son posteriores a la fecha de caducidad de la prohibición
+                    return currentDateTime.isAfter(untilDate);
                 }
             }
         }
-        return true; // Si no se encuentra el usuario en la lista, se considera que la prohibición ha caducado
+        // Si el usuario no está en la lista de prohibidos, se considera que la prohibición ha caducado
+        return true;
     }
+
 
     // Método para eliminar un usuario prohibido de la lista
     private void removeBannedUser(Community community, User user) {
