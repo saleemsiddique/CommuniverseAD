@@ -17,4 +17,8 @@ public interface CommunityService {
     Community updateCommunity(String id, Community community);
 
     User deleteCommunity(Community community);
+
+    List<User> getBannedUsers(Community community);
+
+    Community unbanUser(String communityId, String userId);
 }

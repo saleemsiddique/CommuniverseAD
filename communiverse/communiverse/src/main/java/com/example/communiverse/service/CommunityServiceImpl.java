@@ -9,6 +9,7 @@ import com.example.communiverse.utils.IdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -57,6 +58,17 @@ public class CommunityServiceImpl implements CommunityService{
         communityRepository.deleteCommunityById(community.getId());
         return userRepository.save(user);
     }
+
+    public List<User> getBannedUsers(Community community) {
+        List<User> users = new ArrayList<>();
+        for (Community.BannedUser bannedUser : community.getBanned()) {
+            User user = userRepository.findById(bannedUser.getUser_id())
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            users.add(user);
+        }
+        return users;
+    }
+
     @Override
     public Community updateCommunity(String id, Community newCommunity) {
         Community community = communityRepository.findById(id).orElseThrow();
@@ -79,5 +91,19 @@ public class CommunityServiceImpl implements CommunityService{
         }
         System.out.println(newCommunity);
         return communityRepository.save(newCommunity);
+    }
+
+    public Community unbanUser(String communityId, String userId) {
+        // Obtener la comunidad por su ID
+        Community community = communityRepository.findById(communityId)
+                .orElseThrow(() -> new CommunityNotFoundException("Comunidad no encontrada"));
+
+        // Verificar si la comunidad tiene usuarios baneados
+        List<Community.BannedUser> bannedUsers = community.getBanned();
+        if (bannedUsers != null && !bannedUsers.isEmpty()) {
+            // Eliminar el usuario baneado con el userId proporcionado
+            bannedUsers.removeIf(bannedUser -> bannedUser.getUser_id().equals(userId));
+        }
+        return communityRepository.save(community);
     }
 }

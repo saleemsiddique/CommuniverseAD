@@ -73,4 +73,18 @@ public class CommunityController {
         User user = communityService.deleteCommunity(community);
         return ResponseEntity.ok(user);
     }
+
+    @GetMapping("/{communityId}/banned")
+    public List<User> getBannedUsersInCommunity(@PathVariable String communityId) {
+        Community community = communityService.findById(communityId)
+                .orElseThrow(() -> new CommunityNotFoundException(communityId));
+        return communityService.getBannedUsers(community);
+    }
+
+    // Método para eliminar un usuario baneado de la comunidad
+    @DeleteMapping("/{communityId}/banned/{userId}")
+    public List<User> unbanUser(@PathVariable String communityId, @PathVariable String userId) {
+        Community community = communityService.unbanUser(communityId, userId);
+        return communityService.getBannedUsers(community);
+    }
 }
