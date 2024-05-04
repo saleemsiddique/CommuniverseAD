@@ -37,6 +37,14 @@ public class CommunityController {
         return ResponseEntity.ok(top5Communities);
     }
 
+    @Operation(summary = "Obtains Community by Name")
+    @GetMapping("/nameRegex/{name}")
+    public ResponseEntity<List<Community>> getCommentsByPostId(
+            @PathVariable String name) {
+        List<Community> searchedCommunities = communityService.findByNameRegex(name);
+        return ResponseEntity.ok(searchedCommunities);
+    }
+
     @GetMapping("/mycommunities/{id}")
     public List<Community> getMyCommunities(@PathVariable String id) {
         // Get user by ID

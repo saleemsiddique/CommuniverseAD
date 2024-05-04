@@ -37,6 +37,11 @@ public class CommunityServiceImpl implements CommunityService{
         return communityRepository.findTop5ByOrderByFollowersDesc();
     }
 
+    @Override
+    public List<Community> findByNameRegex(String namePattern) {
+        return communityRepository.findByNameRegex(namePattern);
+    }
+
     public List<Community> getMyCommunities(List<String> communityIds) {
         return communityRepository.findAllByIdIn(communityIds);
     }

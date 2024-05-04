@@ -11,7 +11,10 @@ public interface CommunityService {
     Optional<Community> findById(String id);
     List<Community> findTop5ByOrderByFollowersDesc();
 
+    List<Community> findByNameRegex(String namePattern);
+
     public List<Community> getMyCommunities(List<String> communityIds);
+
     Community createCommunity(Community community);
 
     Community updateCommunity(String id, Community community);
