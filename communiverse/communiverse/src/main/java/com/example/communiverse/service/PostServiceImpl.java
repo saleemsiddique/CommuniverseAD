@@ -145,4 +145,10 @@ public class PostServiceImpl implements PostService{
         post.getPostInteractions().getRepost_users_id().remove(userId);
         return postRepository.save(post);
     }
+
+
+    @Override
+    public Post deletePostById(String id) {
+        return postRepository.deletePostById(id);
+    }
 }

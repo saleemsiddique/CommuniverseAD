@@ -36,4 +36,5 @@ public interface PostService {
 
     Post removeRepost(Post post, String userId);
 
+    Post deletePostById(String id);
 }

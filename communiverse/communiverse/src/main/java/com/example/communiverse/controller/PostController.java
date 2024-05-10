@@ -125,4 +125,11 @@ public class PostController {
 
         return ResponseEntity.ok(post);
     }
+
+    @Operation(summary = "Delete Post by ID")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Post> deletePostById(@PathVariable String id) {
+        Post post = postService.deletePostById(id);
+        return ResponseEntity.ok(post);
+    }
 }

@@ -31,4 +31,5 @@ public interface PostRepository extends MongoRepository<Post, String> {
     @Query(value = "{ 'community_id' : ?0, 'author_id': { $in: ?1 } }", sort = "{'dateTime' : -1}")
     Page<Post> findPostsByCommunityAndFollowedUsers(String communityId, List<String> followedUsersIds, Pageable pageable);
 
+    Post deletePostById(String id);
 }
