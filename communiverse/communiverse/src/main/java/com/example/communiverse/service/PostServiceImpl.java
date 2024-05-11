@@ -1,6 +1,7 @@
 package com.example.communiverse.service;
 
 import com.example.communiverse.domain.Post;
+import com.example.communiverse.domain.PostInteractions;
 import com.example.communiverse.repository.PostRepository;
 import com.example.communiverse.utils.IdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -149,6 +150,30 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public Post deletePostById(String id) {
-        return postRepository.deletePostById(id);
+        Optional<Post> optionalPost = postRepository.findById(id);
+        if (optionalPost.isPresent()) {
+            Post post = optionalPost.get();
+            if (post.isComment()) {
+                // Si el post es un comentario, eliminamos su ID de la lista de comentarios
+                Optional<Post> pPost = findPostByCommentId(id);
+                if (pPost.isPresent()){
+                    Post parentPost = pPost.get();
+                    PostInteractions postInteractions = parentPost.getPostInteractions();
+                    if (postInteractions != null && postInteractions.getComments_id() != null) {
+                        parentPost.getPostInteractions().getComments_id().remove(id);
+                    }
+                    postRepository.save(parentPost);
+                }
+            }
+            return postRepository.deletePostById(id);
+        } else {
+            // Manejar el caso en el que el post no existe
+            throw new IllegalArgumentException("No se encontró ningún post con el ID: " + id);
+        }
+    }
+
+    @Override
+    public Optional<Post> findPostByCommentId(String commentId) {
+        return postRepository.findByCommentId(commentId);
     }
 }

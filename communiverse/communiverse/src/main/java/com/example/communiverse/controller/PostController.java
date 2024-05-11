@@ -14,6 +14,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/post")
@@ -131,5 +132,15 @@ public class PostController {
     public ResponseEntity<Post> deletePostById(@PathVariable String id) {
         Post post = postService.deletePostById(id);
         return ResponseEntity.ok(post);
+    }
+
+    @GetMapping("/comment/{commentId}")
+    public ResponseEntity<?> getPostByCommentId(@PathVariable String commentId) {
+        Optional<Post> post = postService.findPostByCommentId(commentId);
+        if (post.isPresent()) {
+            return new ResponseEntity<>(post.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("No se encontró ningún post para el comentario con ID: " + commentId, HttpStatus.NOT_FOUND);
+        }
     }
 }

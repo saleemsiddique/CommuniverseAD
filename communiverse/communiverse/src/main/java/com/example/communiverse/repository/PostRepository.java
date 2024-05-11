@@ -32,4 +32,7 @@ public interface PostRepository extends MongoRepository<Post, String> {
     Page<Post> findPostsByCommunityAndFollowedUsers(String communityId, List<String> followedUsersIds, Pageable pageable);
 
     Post deletePostById(String id);
+
+    @Query(value = "{ 'postInteractions.comments_id' : { $in: [ ?0 ] } }")
+    Optional<Post> findByCommentId(String commentId);
 }
