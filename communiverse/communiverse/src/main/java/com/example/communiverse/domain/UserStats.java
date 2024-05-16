@@ -23,14 +23,17 @@ public class UserStats {
 
     public void increasePoints(int points) {
         totalPoints += points;
-        while (totalPoints >= pointsToNextLevel(level) && level < MAX_LEVEL) {
+        if (totalPoints >= pointsToNextLevel(level) && level < MAX_LEVEL) {
+            totalPoints -= pointsToNextLevel(level);
             level++;
         }
     }
 
-    public void decreasedPoints(int points) {
+    public void decreasePoints(int points) {
         totalPoints -= points;
-        while (totalPoints < pointsToBackLevel(level) && level > MIN_LEVEL) {
+        if (totalPoints < 0 && level > MIN_LEVEL) {
+            int difference = -totalPoints;
+            totalPoints = pointsToBackLevel(level) - difference;
             level--;
         }
     }

@@ -123,6 +123,12 @@ public class UserServiceImpl implements UserService{
             if (community.getBanned() == null) {
                 community.setBanned(new ArrayList<>());
             }
+            Optional<User> userOp = userRepository.findById(bannedUser.getUser_id());
+            if (userOp.isPresent()) {
+                User userBanned = userOp.get();
+                user.getUserStats().decreasePoints(4);
+                userRepository.save(userBanned);
+            }
             community.getBanned().add(bannedUser);
             userRepository.save(user);
             communityRepository.save(community);
@@ -145,6 +151,7 @@ public class UserServiceImpl implements UserService{
         if (user.getMemberCommunities().contains(communityId)) {
             user.getMemberCommunities().remove(communityId);
             user.getModeratedCommunities().add(communityId);
+            user.getUserStats().increasePoints(5);
             userRepository.save(user);
             return findByMemberCommunitiesContaining(communityId);
         } else if (user.getModeratedCommunities().contains(communityId)) {
@@ -168,6 +175,7 @@ public class UserServiceImpl implements UserService{
         if (user.getModeratedCommunities().contains(communityId)) {
             user.getModeratedCommunities().remove(communityId);
             user.getMemberCommunities().add(communityId);
+            user.getUserStats().decreasePoints(4);
             userRepository.save(user);
             return findByMemberCommunitiesContaining(communityId);
         } else {

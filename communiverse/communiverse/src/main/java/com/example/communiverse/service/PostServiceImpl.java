@@ -2,7 +2,9 @@ package com.example.communiverse.service;
 
 import com.example.communiverse.domain.Post;
 import com.example.communiverse.domain.PostInteractions;
+import com.example.communiverse.domain.User;
 import com.example.communiverse.repository.PostRepository;
+import com.example.communiverse.repository.UserRepository;
 import com.example.communiverse.utils.IdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,6 +23,9 @@ public class PostServiceImpl implements PostService{
 
     @Autowired
     private PostRepository postRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private BlobStorageService blobStorageService;
@@ -116,7 +121,13 @@ public class PostServiceImpl implements PostService{
             Post parentPost = postRepository.findById(parentPostId).orElse(null);
             if (parentPost != null) {
                 parentPost.addCommentId(post.getId());
-                postRepository.save(parentPost); // Guardar el post padre actualizado
+                Optional<User> userOp = userRepository.findById(parentPost.getAuthor_id());
+                if (userOp.isPresent()) {
+                    User user = userOp.get();
+                    user.getUserStats().increasePoints(3);
+                    userRepository.save(user);
+                    postRepository.save(parentPost);
+                }
             }
         }
 
@@ -126,24 +137,48 @@ public class PostServiceImpl implements PostService{
     @Override
     public Post addLike(Post post, String userId) {
         post.getPostInteractions().getLike_users_id().add(userId);
+        Optional<User> userOp = userRepository.findById(post.getAuthor_id());
+        if (userOp.isPresent()) {
+            User user = userOp.get();
+            user.getUserStats().increasePoints(1);
+            userRepository.save(user);
+        }
         return postRepository.save(post);
     }
 
     @Override
     public Post removeLike(Post post, String userId) {
         post.getPostInteractions().getLike_users_id().remove(userId);
+        Optional<User> userOp = userRepository.findById(post.getAuthor_id());
+        if (userOp.isPresent()) {
+            User user = userOp.get();
+            user.getUserStats().decreasePoints(1);
+            userRepository.save(user);
+        }
         return postRepository.save(post);
     }
 
     @Override
     public Post addRepost(Post post, String userId) {
         post.getPostInteractions().getRepost_users_id().add(userId);
+        Optional<User> userOp = userRepository.findById(post.getAuthor_id());
+        if (userOp.isPresent()) {
+            User user = userOp.get();
+            user.getUserStats().increasePoints(2);
+            userRepository.save(user);
+        }
         return postRepository.save(post);
     }
 
     @Override
     public Post removeRepost(Post post, String userId) {
         post.getPostInteractions().getRepost_users_id().remove(userId);
+        Optional<User> userOp = userRepository.findById(post.getAuthor_id());
+        if (userOp.isPresent()) {
+            User user = userOp.get();
+            user.getUserStats().decreasePoints(2);
+            userRepository.save(user);
+        }
         return postRepository.save(post);
     }
 

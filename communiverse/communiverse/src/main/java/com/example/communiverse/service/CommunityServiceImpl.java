@@ -107,7 +107,16 @@ public class CommunityServiceImpl implements CommunityService{
         List<Community.BannedUser> bannedUsers = community.getBanned();
         if (bannedUsers != null && !bannedUsers.isEmpty()) {
             // Eliminar el usuario baneado con el userId proporcionado
-            bannedUsers.removeIf(bannedUser -> bannedUser.getUser_id().equals(userId));
+            bannedUsers.removeIf(bannedUser -> {
+                Optional<User> userOp = userRepository.findById(bannedUser.getUser_id());
+                if (userOp.isPresent()){
+                    User user = userOp.get();
+                    user.getUserStats().increasePoints(4);
+                    userRepository.save(user);
+                    communityRepository.save(community);
+                }
+                return bannedUser.getUser_id().equals(userId);
+            });
         }
         return communityRepository.save(community);
     }
