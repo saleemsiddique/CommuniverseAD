@@ -61,21 +61,37 @@ public class UserAuthController {
             User user = userRepository.findByUsernameOrEmail(loginInput, loginInput)
                     .orElseThrow(() -> new UsernameNotFoundException("User Not Found with email or username : " + loginInput));
 
-            authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(userLoginRequest.getEmailOrUsername().toLowerCase(), userLoginRequest.getPassword()));
+            if (userLoginRequest.isGoogle()) {
+                // Lógica para usuarios de Google
+                SecurityContextHolder.getContext().setAuthentication(
+                        new UsernamePasswordAuthenticationToken(user.getUsername(), null, user.getAuthorities()));
+                String jwt = jwtUtils.generateJwtToken(user.getUsername());
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            String jwt = jwtUtils.generateJwtToken(authentication);
+                return ResponseEntity.ok(new JwtResponse(jwt,
+                        user.getId(),
+                        user.getName(),
+                        user.getLastName(),
+                        user.getEmail().toLowerCase(),
+                        user.getPassword(),
+                        user.getUsername().toLowerCase()));
+            } else {
+                // Lógica para usuarios normales
+                authentication = authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(userLoginRequest.getEmailOrUsername().toLowerCase(), userLoginRequest.getPassword()));
 
-            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                String jwt = jwtUtils.generateJwtToken(authentication);
 
-            return ResponseEntity.ok(new JwtResponse(jwt,
-                    userDetails.getId(),
-                    userDetails.getName(),
-                    userDetails.getLastname(),
-                    userDetails.getEmail().toLowerCase(),
-                    userDetails.getPassword(),
-                    userDetails.getUsername().toLowerCase()));
+                UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+
+                return ResponseEntity.ok(new JwtResponse(jwt,
+                        userDetails.getId(),
+                        userDetails.getName(),
+                        userDetails.getLastname(),
+                        userDetails.getEmail().toLowerCase(),
+                        userDetails.getPassword(),
+                        userDetails.getUsername().toLowerCase()));
+            }
         } catch (UsernameNotFoundException ex) {
             return ResponseEntity
                     .badRequest()
@@ -86,6 +102,7 @@ public class UserAuthController {
                     .body("Email, username, or password is incorrect");
         }
     }
+
 
     private ResponseEntity<?> confirmingEmail(String email) {
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
@@ -121,7 +138,7 @@ public class UserAuthController {
 
         // Create new user's account
         User user = new User(signUpRequestUser.getName(), signUpRequestUser.getLastName(), signUpRequestUser.getEmail().toLowerCase(),
-                encoder.encode(signUpRequestUser.getPassword()), signUpRequestUser.getUsername().toLowerCase());
+                encoder.encode(signUpRequestUser.getPassword()), signUpRequestUser.getUsername().toLowerCase(), signUpRequestUser.isGoogle());
 
         userService.addUser(user);
 

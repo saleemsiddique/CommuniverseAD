@@ -17,8 +17,12 @@ public class UserLoginRequest {
     @Size(min = 6, max = 40)
     private String password;
 
-    public UserLoginRequest(String emailOrUsername, String password) {
+    private boolean isGoogle;
+
+
+    public UserLoginRequest(String emailOrUsername, String password, boolean isGoogle) {
         this.emailOrUsername = emailOrUsername;
         this.password = password;
+        this.isGoogle = isGoogle;
     }
 }

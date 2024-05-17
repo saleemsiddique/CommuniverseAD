@@ -34,4 +34,6 @@ public class UserSignupRequest {
     @NotBlank
     @Size(max = 30)
     private String username;
+
+    private boolean isGoogle;
 }

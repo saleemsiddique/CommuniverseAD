@@ -62,7 +62,9 @@ public class User {
     @NotNull
     private List<String> followed_id;
 
-    public User(String name, String lastName, String email, String password, String username) {
+    private boolean isGoogle;
+
+    public User(String name, String lastName, String email, String password, String username, boolean isGoogle) {
         this.name = name;
         this.lastName = lastName;
         this.email = email;
@@ -77,5 +79,6 @@ public class User {
         this.interactions = new UserInteractions();
         this.followers_id = new ArrayList<>();
         this.followed_id = new ArrayList<>();
+        this.isGoogle = isGoogle;
     }
 }
