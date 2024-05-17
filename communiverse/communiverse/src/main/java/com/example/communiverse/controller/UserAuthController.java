@@ -153,6 +153,14 @@ public class UserAuthController {
         // Obtiene el cliente existente
         User user = optionalUser.get();
 
+        if (!user.getUsername().equalsIgnoreCase(userModifyRequest.getUsername())) {
+            if (userRepository.existsByUsername(userModifyRequest.getUsername().toLowerCase())) {
+                return ResponseEntity
+                        .badRequest()
+                        .body("Error: Username is already been used");
+            }
+        }
+
         // Actualiza los campos del cliente con los valores proporcionados en la solicitud
         user.setName(userModifyRequest.getName());
         user.setLastName(userModifyRequest.getLastName());
