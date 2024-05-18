@@ -143,13 +143,13 @@ public class UserAuthController {
         if (userRepository.existsByEmail(signUpRequestUser.getEmail().toLowerCase())) {
             return ResponseEntity
                     .badRequest()
-                    .body("Error: Email is already been used");
+                    .body("Email is already been used");
         }
 
         if (userRepository.existsByUsername(signUpRequestUser.getUsername().toLowerCase())) {
             return ResponseEntity
                     .badRequest()
-                    .body("Error: Username is already been used");
+                    .body("Username is already been used");
         }
 
         // Create new user's account
@@ -175,6 +175,24 @@ public class UserAuthController {
     @PutMapping("edit/{id}")
     public ResponseEntity<?> modifyUser(@PathVariable String id, @Valid @RequestBody UserModifyRequest userModifyRequest) {
 
+        if(userModifyRequest.getName().length() > 20){
+            return ResponseEntity
+                    .badRequest()
+                    .body("Name is too long (max 20 characters)");
+        }
+
+        if(userModifyRequest.getLastName().length() > 20){
+            return ResponseEntity
+                    .badRequest()
+                    .body("Last Name is too long (max 20 characters)");
+        }
+
+        if(userModifyRequest.getUsername().length() > 20){
+            return ResponseEntity
+                    .badRequest()
+                    .body("Username is too long (max 20 characters)");
+        }
+
         Optional<User> optionalUser = userRepository.findById(id);
 
         if (!optionalUser.isPresent()) {
@@ -198,7 +216,7 @@ public class UserAuthController {
         user.setName(userModifyRequest.getName());
         user.setLastName(userModifyRequest.getLastName());
         user.setBiography(userModifyRequest.getBiography());
-        user.setUsername(userModifyRequest.getUsername());
+        user.setUsername(userModifyRequest.getUsername().toLowerCase());
 
         userRepository.save(user);
 

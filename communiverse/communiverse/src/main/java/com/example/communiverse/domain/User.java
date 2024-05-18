@@ -21,11 +21,11 @@ public class User {
     private String id;
 
     @NotBlank
-    @Size(min = 3, max = 50)
+    @Size(min = 3, max = 20)
     private String name;
 
     @NotBlank
-    @Size(min = 3, max = 50)
+    @Size(min = 3, max = 20)
     private String lastName;
 
     @NotBlank
