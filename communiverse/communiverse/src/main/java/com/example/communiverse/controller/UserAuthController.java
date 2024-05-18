@@ -55,17 +55,21 @@ public class UserAuthController {
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody UserLoginRequest userLoginRequest) {
         String loginInput = userLoginRequest.getEmailOrUsername().toLowerCase();
-        Authentication authentication = null;
 
         try {
             User user = userRepository.findByUsernameOrEmail(loginInput, loginInput)
-                    .orElseThrow(() -> new UsernameNotFoundException("User Not Found with email or username : " + loginInput));
+                    .orElseThrow(() -> new UsernameNotFoundException("User Not Found with email or username: " + loginInput));
 
             if (userLoginRequest.isGoogle()) {
                 // Lógica para usuarios de Google
-                SecurityContextHolder.getContext().setAuthentication(
-                        new UsernamePasswordAuthenticationToken(user.getUsername(), null, user.getAuthorities()));
-                String jwt = jwtUtils.generateJwtToken(user.getUsername());
+                if (!user.isGoogle()) {
+                    return ResponseEntity
+                            .badRequest()
+                            .body("This user is not registered via Google");
+                }
+
+                // Generar token JWT directamente
+                String jwt = jwtUtils.generateJwtTokenUser(user);
 
                 return ResponseEntity.ok(new JwtResponse(jwt,
                         user.getId(),
@@ -73,10 +77,19 @@ public class UserAuthController {
                         user.getLastName(),
                         user.getEmail().toLowerCase(),
                         user.getPassword(),
-                        user.getUsername().toLowerCase()));
+                        user.getUsername().toLowerCase(),
+                        user.isGoogle()
+                ));
             } else {
+
+                if (user.isGoogle()){
+                    return ResponseEntity
+                            .badRequest()
+                            .body("User not found with email or username: " + loginInput);
+                }
+
                 // Lógica para usuarios normales
-                authentication = authenticationManager.authenticate(
+                Authentication authentication = authenticationManager.authenticate(
                         new UsernamePasswordAuthenticationToken(userLoginRequest.getEmailOrUsername().toLowerCase(), userLoginRequest.getPassword()));
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -90,7 +103,9 @@ public class UserAuthController {
                         userDetails.getLastname(),
                         userDetails.getEmail().toLowerCase(),
                         userDetails.getPassword(),
-                        userDetails.getUsername().toLowerCase()));
+                        userDetails.getUsername().toLowerCase(),
+                        user.isGoogle()
+                ));
             }
         } catch (UsernameNotFoundException ex) {
             return ResponseEntity
@@ -102,6 +117,7 @@ public class UserAuthController {
                     .body("Email, username, or password is incorrect");
         }
     }
+
 
 
     private ResponseEntity<?> confirmingEmail(String email) {
