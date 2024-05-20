@@ -4,10 +4,14 @@ import com.example.communiverse.domain.Community;
 import com.example.communiverse.domain.User;
 import com.example.communiverse.repository.CommunityRepository;
 import com.example.communiverse.repository.UserRepository;
+import com.example.communiverse.utils.EmailUtil;
 import com.example.communiverse.utils.IdGenerator;
+import com.example.communiverse.utils.RandomPassword;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -15,6 +19,12 @@ import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService{
+
+    @Autowired
+    PasswordEncoder encoder;
+
+    @Autowired
+    private EmailUtil emailUtil;
 
     @Autowired
     private UserRepository userRepository;
@@ -230,6 +240,28 @@ public class UserServiceImpl implements UserService{
             community.setBanned(bannedUsers); // Actualizar la lista de usuarios prohibidos en la comunidad
             communityRepository.save(community); // Guardar la comunidad actualizada en la base de datos
         }
+    }
+
+    public String recuperatePassword(String email) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        User user = new User();
+        if (userOptional.isPresent()){
+            user = userOptional.get();
+        }
+
+        // Generar una contraseña aleatoria
+        String newPassword = RandomPassword.generateRandomPassword();
+
+        user.setPassword(encoder.encode(newPassword));
+        userRepository.save(user);
+
+        try {
+            emailUtil.sendSetPasswordEmail(email, newPassword);
+        } catch (MessagingException e) {
+            throw new RuntimeException("Unable to send set password email. Please try again.");
+        }
+
+        return "New password set successfully. Check your email for the new password.";
     }
 
 }

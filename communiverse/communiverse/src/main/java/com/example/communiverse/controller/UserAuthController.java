@@ -280,5 +280,46 @@ public class UserAuthController {
         }
     }
 
+    @PutMapping("/editPassword/{id}")
+    public ResponseEntity<?> modifyContrasenyaCliente(@PathVariable String id, @Valid @RequestBody UserPasswordRequest userPasswordRequest){
+        String loginInput = userPasswordRequest.getEmailOrUsername().toLowerCase();
+
+        try {
+        Optional<User> optionalUser = userRepository.findById(id);
+
+        if (!optionalUser.isPresent()) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(new MessageResponse("Error: User not found"));
+        }
+
+        // Lógica para usuarios normales
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginInput, userPasswordRequest.getPassword()));
+
+        User user = optionalUser.get();
+
+        user.setPassword(encoder.encode(userPasswordRequest.getNewPassword()));
+        userRepository.save(user);
+    } catch (UsernameNotFoundException ex) {
+        return ResponseEntity
+                .badRequest()
+                .body("User not found with email or username: " + loginInput);
+    } catch (BadCredentialsException ex) {
+        return ResponseEntity
+                .badRequest()
+                .body("Current password is incorrect");
+    }
+
+        return ResponseEntity.ok(new MessageResponse("Cliente modificado exitosamente"));
+    }
+
+
+    @GetMapping("/forgot-password/{email}")
+    public ResponseEntity<String> forgotPassword(@PathVariable String email){
+        String responseMessage = userService.recuperatePassword(email);
+        return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+    }
+
 }
 

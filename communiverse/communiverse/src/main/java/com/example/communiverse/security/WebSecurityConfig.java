@@ -90,7 +90,8 @@ public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
                 .exceptionHandling().authenticationEntryPoint((AuthenticationEntryPoint) unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests().antMatchers("/api/auth/signin").permitAll()
-                .antMatchers("/api/auth/signup").permitAll() // Requiere autenticación para /api/auth/edit
+                .antMatchers("/api/auth/signup").permitAll()
+                .antMatchers("/api/auth/forgot-password/**").permitAll()// Requiere autenticación para /api/auth/edit
                 .antMatchers("/api/test/**").permitAll()
                 .antMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated();
