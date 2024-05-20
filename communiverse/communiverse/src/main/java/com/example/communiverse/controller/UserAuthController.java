@@ -193,6 +193,12 @@ public class UserAuthController {
                     .body("Username is too long (max 20 characters)");
         }
 
+        if(userModifyRequest.getBiography().length() > 100){
+            return ResponseEntity
+                    .badRequest()
+                    .body("Description is too long (max 100 characters)");
+        }
+
         Optional<User> optionalUser = userRepository.findById(id);
 
         if (!optionalUser.isPresent()) {
@@ -280,17 +286,17 @@ public class UserAuthController {
         }
     }
 
-    @PutMapping("/editPassword/{id}")
-    public ResponseEntity<?> modifyContrasenyaCliente(@PathVariable String id, @Valid @RequestBody UserPasswordRequest userPasswordRequest){
+    @PutMapping("/editPassword/{email}")
+    public ResponseEntity<?> modifyUserPassword(@PathVariable String email, @Valid @RequestBody UserPasswordRequest userPasswordRequest){
         String loginInput = userPasswordRequest.getEmailOrUsername().toLowerCase();
 
         try {
-        Optional<User> optionalUser = userRepository.findById(id);
+        Optional<User> optionalUser = userRepository.findByEmail(email);
 
         if (!optionalUser.isPresent()) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
-                    .body(new MessageResponse("Error: User not found"));
+                    .body("User not found");
         }
 
         // Lógica para usuarios normales
@@ -317,8 +323,14 @@ public class UserAuthController {
 
     @GetMapping("/forgot-password/{email}")
     public ResponseEntity<String> forgotPassword(@PathVariable String email){
-        String responseMessage = userService.recuperatePassword(email);
-        return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+        try {
+            String responseMessage = userService.recuperatePassword(email);
+            return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+        } catch (Exception e){
+            return ResponseEntity
+                    .badRequest()
+                    .body("There is no email with this account.");
+        }
     }
 
 }

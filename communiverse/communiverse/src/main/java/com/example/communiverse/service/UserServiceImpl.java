@@ -247,6 +247,8 @@ public class UserServiceImpl implements UserService{
         User user = new User();
         if (userOptional.isPresent()){
             user = userOptional.get();
+        } else {
+            throw new RuntimeException("There is no email with this account.");
         }
 
         // Generar una contraseña aleatoria
