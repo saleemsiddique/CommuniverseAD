@@ -1,6 +1,7 @@
 package com.example.communiverse.controller;
 
 import com.example.communiverse.domain.User;
+import com.example.communiverse.exception.AccountViaGoogleException;
 import com.example.communiverse.payload.request.*;
 import com.example.communiverse.payload.response.JwtResponse;
 import com.example.communiverse.payload.response.MessageResponse;
@@ -326,6 +327,10 @@ public class UserAuthController {
         try {
             String responseMessage = userService.recuperatePassword(email);
             return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+        } catch(AccountViaGoogleException err){
+            return ResponseEntity
+                    .badRequest()
+                    .body("Cannot recover password from an account registered via Google.");
         } catch (Exception e){
             return ResponseEntity
                     .badRequest()

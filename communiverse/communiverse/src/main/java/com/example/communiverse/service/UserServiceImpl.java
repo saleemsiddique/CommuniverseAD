@@ -2,6 +2,7 @@ package com.example.communiverse.service;
 
 import com.example.communiverse.domain.Community;
 import com.example.communiverse.domain.User;
+import com.example.communiverse.exception.AccountViaGoogleException;
 import com.example.communiverse.repository.CommunityRepository;
 import com.example.communiverse.repository.UserRepository;
 import com.example.communiverse.utils.EmailUtil;
@@ -249,6 +250,10 @@ public class UserServiceImpl implements UserService{
             user = userOptional.get();
         } else {
             throw new RuntimeException("There is no email with this account.");
+        }
+
+        if (user.isGoogle()){
+            throw new AccountViaGoogleException("Cannot recover password from an account registered via Google.");
         }
 
         // Generar una contraseña aleatoria
