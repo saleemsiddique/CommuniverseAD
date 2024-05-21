@@ -200,6 +200,16 @@ public class PostServiceImpl implements PostService{
                     postRepository.save(parentPost);
                 }
             }
+            if (!post.getPhotos().isEmpty()){
+                for (String blobname : post.getPhotos()){
+                    blobStorageService.deletePhoto(blobname);
+                }
+            }
+            if (!post.getVideos().isEmpty()) {
+                for (String blobname : post.getVideos()) {
+                    blobStorageService.deletePhoto(blobname);
+                }
+            }
             return postRepository.deletePostById(id);
         } else {
             // Manejar el caso en el que el post no existe
