@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public List<User> findByUsernameRegex(String usernamePattern) {
-        return userRepository.findByUsernameRegex(usernamePattern);
+        return userRepository.findByUsernameRegex(usernamePattern.toLowerCase());
     }
 
     @Override

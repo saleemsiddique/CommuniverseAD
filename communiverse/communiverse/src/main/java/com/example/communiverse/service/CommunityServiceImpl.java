@@ -39,7 +39,7 @@ public class CommunityServiceImpl implements CommunityService{
 
     @Override
     public List<Community> findByNameRegex(String namePattern) {
-        return communityRepository.findByNameRegex(namePattern);
+        return communityRepository.findByNameRegex(namePattern.toLowerCase());
     }
 
     public List<Community> getMyCommunities(List<String> communityIds) {
@@ -49,6 +49,7 @@ public class CommunityServiceImpl implements CommunityService{
     @Override
     public Community createCommunity(Community community) {
         community.setId(IdGenerator.generateId());
+        community.setName(community.getName().toLowerCase());
         String photoBase64 = community.getPhoto();
         if(!community.getPhoto().equalsIgnoreCase("")) {
             String photoUrl = blobStorageService.uploadPhoto(photoBase64, IdGenerator.generateId() + "-community_" + community.getId() + "-image.jpg");
